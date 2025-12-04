@@ -3,6 +3,7 @@ import { PaletteGenerator, type ColorItem } from './components/PaletteGenerator'
 import { ThemePreview } from './components/ThemePreview';
 import { ThemeEditor } from './components/ThemeEditor';
 import { TrendingPalettes } from './components/TrendingPalettes';
+import { Footer } from './components/Footer';
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -59,6 +60,8 @@ function App() {
       </main>
 
       <TrendingPalettes onSelect={handlePaletteSelect} />
+
+      <Footer />
     </div>
   );
 }
