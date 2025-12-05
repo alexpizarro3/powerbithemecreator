@@ -7,6 +7,8 @@ interface ThemePreviewProps {
     setIsDarkMode: (isDark: boolean) => void;
     pageBackground: { color: string; transparency: number };
     filterPane: { backgroundColor: string; foreColor: string; transparency: number };
+    borderRadius: number;
+    fontFamily: string;
 }
 
 const hexToRgba = (hex: string, transparency: number) => {

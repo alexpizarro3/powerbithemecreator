@@ -113,7 +113,6 @@ const SortableColor = ({ color, toggleLock, updateColor }: SortableColorProps) =
 interface PaletteGeneratorProps {
     colors: ColorItem[];
     setColors: (colors: ColorItem[]) => void;
-    onSelectPalette?: (colors: string[]) => void;
     onUndo?: () => void;
     onRedo?: () => void;
     canUndo?: boolean;
@@ -124,7 +123,6 @@ interface PaletteGeneratorProps {
 export const PaletteGenerator = ({
     colors,
     setColors,
-    onSelectPalette,
     onUndo,
     onRedo,
     canUndo,

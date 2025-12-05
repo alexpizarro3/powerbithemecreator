@@ -11,11 +11,11 @@ function App() {
   const [colors, setColors] = useState<ColorItem[]>(() => {
     const saved = localStorage.getItem('pbi-theme-colors');
     return saved ? JSON.parse(saved) : [
-      { id: '1', hex: '#118DFF', locked: false },
-      { id: '2', hex: '#12239E', locked: false },
-      { id: '3', hex: '#E66C37', locked: false },
-      { id: '4', hex: '#6B007B', locked: false },
-      { id: '5', hex: '#E044A7', locked: false },
+      { id: '1', hex: '#4DEEEA', locked: false }, // Cyan
+      { id: '2', hex: '#74EE15', locked: false }, // Lime
+      { id: '3', hex: '#FFE700', locked: false }, // Yellow
+      { id: '4', hex: '#F000FF', locked: false }, // Magenta
+      { id: '5', hex: '#001EFF', locked: false }, // Blue
     ];
   });
 
@@ -116,7 +116,6 @@ function App() {
             colors={colors}
             setColors={handleSetColors}
             onPaletteGenerated={handlePaletteGenerated}
-            onSelectPalette={handlePaletteSelect}
             onUndo={undo}
             onRedo={redo}
             canUndo={historyIndex > 0}
