@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { RefreshCw, Lock, Unlock, GripVertical, ChevronDown, LayoutTemplate, AlertTriangle } from 'lucide-react';
+import { useState } from 'react';
+import { RefreshCw, Lock, Unlock, GripVertical, ChevronDown, LayoutTemplate, AlertTriangle, Image as ImageIcon, Undo, Redo } from 'lucide-react';
+import { ImageToPalette } from './ImageToPalette';
 import {
     DndContext,
     closestCenter,
@@ -111,11 +112,27 @@ const SortableColor = ({ color, toggleLock, updateColor }: SortableColorProps) =
 
 interface PaletteGeneratorProps {
     colors: ColorItem[];
-    setColors: React.Dispatch<React.SetStateAction<ColorItem[]>>;
+    setColors: (colors: ColorItem[]) => void;
+    onSelectPalette?: (colors: string[]) => void;
+    onUndo?: () => void;
+    onRedo?: () => void;
+    canUndo?: boolean;
+    canRedo?: boolean;
+    onPaletteGenerated?: (colors: ColorItem[]) => void;
 }
 
-export const PaletteGenerator = ({ colors, setColors }: PaletteGeneratorProps) => {
+export const PaletteGenerator = ({
+    colors,
+    setColors,
+    onSelectPalette,
+    onUndo,
+    onRedo,
+    canUndo,
+    canRedo,
+    onPaletteGenerated
+}: PaletteGeneratorProps) => {
     const [harmonyMode, setHarmonyMode] = useState<HarmonyMode>('random');
+    const [showImageUpload, setShowImageUpload] = useState(false);
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -126,9 +143,14 @@ export const PaletteGenerator = ({ colors, setColors }: PaletteGeneratorProps) =
 
     const generateColors = () => {
         if (harmonyMode === 'random') {
-            setColors(colors.map(c =>
+            const newColors = colors.map(c =>
                 c.locked ? c : { ...c, hex: generateRandomColor() }
-            ));
+            );
+            if (onPaletteGenerated) {
+                onPaletteGenerated(newColors);
+            } else {
+                setColors(newColors);
+            }
             return;
         }
 
@@ -140,12 +162,18 @@ export const PaletteGenerator = ({ colors, setColors }: PaletteGeneratorProps) =
         const newPalette = generateHarmoniousPalette(baseColor, harmonyMode, colors.length);
 
         let paletteIndex = 0;
-        setColors(colors.map((c) => {
+        const newColors = colors.map((c) => {
             if (c.locked) return c;
             const newHex = newPalette[paletteIndex % newPalette.length];
             paletteIndex++;
             return { ...c, hex: newHex };
-        }));
+        });
+
+        if (onPaletteGenerated) {
+            onPaletteGenerated(newColors);
+        } else {
+            setColors(newColors);
+        }
     };
 
     const applyTemplate = (templateId: string) => {
@@ -158,7 +186,11 @@ export const PaletteGenerator = ({ colors, setColors }: PaletteGeneratorProps) =
             locked: false
         }));
 
-        setColors(newColors);
+        if (onPaletteGenerated) {
+            onPaletteGenerated(newColors);
+        } else {
+            setColors(newColors);
+        }
     };
 
     const toggleLock = (id: string) => {
@@ -169,15 +201,28 @@ export const PaletteGenerator = ({ colors, setColors }: PaletteGeneratorProps) =
         setColors(colors.map(c => c.id === id ? { ...c, hex: newHex } : c));
     };
 
+    const handleImagePalette = (newColors: string[]) => {
+        const colorItems = newColors.map((hex, index) => ({
+            id: colors[index]?.id || `color-${Date.now()}-${index}`,
+            hex,
+            locked: false
+        }));
+
+        if (onPaletteGenerated) {
+            onPaletteGenerated(colorItems);
+        } else {
+            setColors(colorItems);
+        }
+    };
+
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
 
         if (over && active.id !== over.id) {
-            setColors((items) => {
-                const oldIndex = items.findIndex((item) => item.id === active.id);
-                const newIndex = items.findIndex((item) => item.id === over.id);
-                return arrayMove(items, oldIndex, newIndex);
-            });
+            const oldIndex = colors.findIndex((item) => item.id === active.id);
+            const newIndex = colors.findIndex((item) => item.id === over.id);
+            const newColors = arrayMove(colors, oldIndex, newIndex);
+            setColors(newColors);
         }
     };
 
@@ -223,14 +268,52 @@ export const PaletteGenerator = ({ colors, setColors }: PaletteGeneratorProps) =
                     </div>
                 </div>
 
-                <button
-                    onClick={generateColors}
-                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 font-medium active:scale-95"
-                >
-                    <RefreshCw size={18} />
-                    Generate Palette
-                </button>
+                <div className="flex gap-2">
+                    <button
+                        onClick={onUndo}
+                        disabled={!canUndo}
+                        className={`p-3 rounded-xl transition-all ${canUndo
+                            ? 'bg-slate-800 text-white hover:bg-slate-700 shadow-lg shadow-black/20'
+                            : 'bg-slate-900/50 text-slate-600 cursor-not-allowed'
+                            }`}
+                        title="Undo"
+                    >
+                        <Undo size={20} />
+                    </button>
+                    <button
+                        onClick={onRedo}
+                        disabled={!canRedo}
+                        className={`p-3 rounded-xl transition-all ${canRedo
+                            ? 'bg-slate-800 text-white hover:bg-slate-700 shadow-lg shadow-black/20'
+                            : 'bg-slate-900/50 text-slate-600 cursor-not-allowed'
+                            }`}
+                        title="Redo"
+                    >
+                        <Redo size={20} />
+                    </button>
+                    <button
+                        onClick={generateColors}
+                        className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 font-medium active:scale-95"
+                    >
+                        <RefreshCw size={18} />
+                        Generate
+                    </button>
+                    <button
+                        onClick={() => setShowImageUpload(true)}
+                        className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-all border border-white/10 font-medium active:scale-95"
+                        title="Extract from Image"
+                    >
+                        <ImageIcon size={18} />
+                    </button>
+                </div>
             </div>
+
+            {showImageUpload && (
+                <ImageToPalette
+                    onPaletteGenerated={handleImagePalette}
+                    onClose={() => setShowImageUpload(false)}
+                />
+            )}
 
             <DndContext
                 sensors={sensors}

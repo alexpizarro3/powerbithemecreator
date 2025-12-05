@@ -38,22 +38,22 @@ export const TrendingPalettes = ({ onSelect }: TrendingPalettesProps) => {
             </div>
 
             {/* Dock */}
-            <div className="w-full bg-slate-900/90 backdrop-blur-xl border-t border-white/10 shadow-2xl">
-                <div className="max-w-[1600px] mx-auto px-6 py-4 overflow-x-auto custom-scrollbar">
+            <div className="w-full bg-slate-900/90 backdrop-blur-xl border-t border-white/10 shadow-2xl overflow-hidden group pause-on-hover">
+                <div className="max-w-full py-4">
                     {loading ? (
                         <div className="flex justify-center items-center h-24 text-slate-400 text-sm">
                             <Loader2 className="animate-spin mr-2" size={16} />
                             Loading...
                         </div>
                     ) : (
-                        <div className="flex gap-4 min-w-max">
-                            {palettes.map((palette) => (
+                        <div className="flex gap-4 min-w-max animate-marquee">
+                            {[...palettes, ...palettes].map((palette, index) => (
                                 <div
-                                    key={palette.id}
+                                    key={`${palette.id}-${index}`}
                                     onClick={() => onSelect(palette.colors)}
-                                    className="group relative bg-black/40 p-2 rounded-lg border border-white/5 hover:border-white/20 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-500/10 w-40"
+                                    className="group/item relative bg-black/40 p-2 rounded-lg border border-white/5 hover:border-white/20 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-500/10 w-40 flex-shrink-0"
                                 >
-                                    <div className="flex h-12 rounded-md overflow-hidden mb-2 ring-1 ring-white/10 group-hover:ring-white/30 transition-all">
+                                    <div className="flex h-12 rounded-md overflow-hidden mb-2 ring-1 ring-white/10 group-hover/item:ring-white/30 transition-all">
                                         {palette.colors.map((color, i) => (
                                             <div
                                                 key={i}
@@ -63,7 +63,7 @@ export const TrendingPalettes = ({ onSelect }: TrendingPalettesProps) => {
                                         ))}
                                     </div>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-xs font-medium text-slate-400 group-hover:text-white transition-colors truncate max-w-[100px]">
+                                        <span className="text-xs font-medium text-slate-400 group-hover/item:text-white transition-colors truncate max-w-[100px]">
                                             {palette.name}
                                         </span>
                                         <div className="flex items-center gap-1 text-[10px] text-slate-600">

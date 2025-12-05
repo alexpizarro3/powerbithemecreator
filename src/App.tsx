@@ -1,28 +1,102 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PaletteGenerator, type ColorItem } from './components/PaletteGenerator';
 import { ThemePreview } from './components/ThemePreview';
 import { ThemeEditor } from './components/ThemeEditor';
 import { TrendingPalettes } from './components/TrendingPalettes';
 import { Footer } from './components/Footer';
+import { suggestThemeSettings } from './utils/theme-suggestions';
 
 function App() {
-  const [isDarkMode, setIsDarkMode] = useState(true);
-  const [colors, setColors] = useState<ColorItem[]>([
-    { id: '1', hex: '#3B82F6', locked: false },
-    { id: '2', hex: '#8B5CF6', locked: false },
-    { id: '3', hex: '#EC4899', locked: false },
-    { id: '4', hex: '#10B981', locked: false },
-    { id: '5', hex: '#F59E0B', locked: false },
-  ]);
-  const [borderRadius, setBorderRadius] = useState(0);
-  const [fontFamily, setFontFamily] = useState("Segoe UI");
+  // Load initial state from localStorage or use default
+  const [colors, setColors] = useState<ColorItem[]>(() => {
+    const saved = localStorage.getItem('pbi-theme-colors');
+    return saved ? JSON.parse(saved) : [
+      { id: '1', hex: '#118DFF', locked: false },
+      { id: '2', hex: '#12239E', locked: false },
+      { id: '3', hex: '#E66C37', locked: false },
+      { id: '4', hex: '#6B007B', locked: false },
+      { id: '5', hex: '#E044A7', locked: false },
+    ];
+  });
+
+  // History state for Undo/Redo
+  const [history, setHistory] = useState<ColorItem[][]>([colors]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem('pbi-theme-darkmode');
+    return saved ? JSON.parse(saved) : true;
+  });
+
+  const [borderRadius, setBorderRadius] = useState(() => {
+    const saved = localStorage.getItem('pbi-theme-radius');
+    return saved ? Number(saved) : 0;
+  });
+
+  const [fontFamily, setFontFamily] = useState(() => {
+    return localStorage.getItem('pbi-theme-font') || "Segoe UI";
+  });
+
+  const [pageBackground, setPageBackground] = useState(() => {
+    const saved = localStorage.getItem('pbi-theme-page-bg');
+    return saved ? JSON.parse(saved) : { color: '#FFFFFF', transparency: 0 };
+  });
+
+  const [filterPane, setFilterPane] = useState(() => {
+    const saved = localStorage.getItem('pbi-theme-filter-pane');
+    return saved ? JSON.parse(saved) : { backgroundColor: '#FFFFFF', foreColor: '#000000', transparency: 0 };
+  });
+
+  // Persistence Effects
+  useEffect(() => { localStorage.setItem('pbi-theme-colors', JSON.stringify(colors)); }, [colors]);
+  useEffect(() => { localStorage.setItem('pbi-theme-darkmode', JSON.stringify(isDarkMode)); }, [isDarkMode]);
+  useEffect(() => { localStorage.setItem('pbi-theme-radius', borderRadius.toString()); }, [borderRadius]);
+  useEffect(() => { localStorage.setItem('pbi-theme-font', fontFamily); }, [fontFamily]);
+  useEffect(() => { localStorage.setItem('pbi-theme-page-bg', JSON.stringify(pageBackground)); }, [pageBackground]);
+  useEffect(() => { localStorage.setItem('pbi-theme-filter-pane', JSON.stringify(filterPane)); }, [filterPane]);
+
+  // Undo/Redo Logic
+  const handleSetColors = (newColors: ColorItem[], addToHistory = true) => {
+    setColors(newColors);
+    if (addToHistory) {
+      const newHistory = history.slice(0, historyIndex + 1);
+      newHistory.push(newColors);
+      setHistory(newHistory);
+      setHistoryIndex(newHistory.length - 1);
+    }
+  };
+
+  const undo = () => {
+    if (historyIndex > 0) {
+      setHistoryIndex(historyIndex - 1);
+      setColors(history[historyIndex - 1]);
+    }
+  };
+
+  const redo = () => {
+    if (historyIndex < history.length - 1) {
+      setHistoryIndex(historyIndex + 1);
+      setColors(history[historyIndex + 1]);
+    }
+  };
+
+  const handlePaletteGenerated = (newColors: ColorItem[]) => {
+    // 1. Update colors
+    handleSetColors(newColors);
+
+    // 2. Suggest and apply theme settings
+    const suggestions = suggestThemeSettings(newColors.map(c => c.hex), isDarkMode);
+    setPageBackground(suggestions.pageBackground);
+    setFilterPane(suggestions.filterPane);
+  };
 
   const handlePaletteSelect = (newColors: string[]) => {
-    setColors(newColors.map((hex, index) => ({
-      id: colors[index]?.id || `color-${Date.now()}-${index}`,
+    const colorItems = newColors.map((hex, index) => ({
+      id: `${Date.now()}-${index}`,
       hex,
       locked: false
-    })));
+    }));
+    handlePaletteGenerated(colorItems);
   };
 
   return (
@@ -38,14 +112,29 @@ function App() {
 
       <main className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-4 space-y-8">
-          <PaletteGenerator colors={colors} setColors={setColors} />
+          <PaletteGenerator
+            colors={colors}
+            setColors={handleSetColors}
+            onPaletteGenerated={handlePaletteGenerated}
+            onSelectPalette={handlePaletteSelect}
+            onUndo={undo}
+            onRedo={redo}
+            canUndo={historyIndex > 0}
+            canRedo={historyIndex < history.length - 1}
+          />
           <ThemeEditor
             colors={colors}
+            setColors={handleSetColors}
             isDarkMode={isDarkMode}
+            setIsDarkMode={setIsDarkMode}
             borderRadius={borderRadius}
             setBorderRadius={setBorderRadius}
             fontFamily={fontFamily}
             setFontFamily={setFontFamily}
+            pageBackground={pageBackground}
+            setPageBackground={setPageBackground}
+            filterPane={filterPane}
+            setFilterPane={setFilterPane}
           />
         </div>
         <div className="lg:col-span-8 space-y-8">
@@ -55,6 +144,8 @@ function App() {
             setIsDarkMode={setIsDarkMode}
             borderRadius={borderRadius}
             fontFamily={fontFamily}
+            pageBackground={pageBackground}
+            filterPane={filterPane}
           />
         </div>
       </main>
