@@ -23,10 +23,7 @@ function App() {
   const [history, setHistory] = useState<ColorItem[][]>([colors]);
   const [historyIndex, setHistoryIndex] = useState(0);
 
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    const saved = localStorage.getItem('pbi-theme-darkmode');
-    return saved ? JSON.parse(saved) : true;
-  });
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
   const [borderRadius, setBorderRadius] = useState(() => {
     const saved = localStorage.getItem('pbi-theme-radius');
@@ -39,12 +36,18 @@ function App() {
 
   const [pageBackground, setPageBackground] = useState(() => {
     const saved = localStorage.getItem('pbi-theme-page-bg');
-    return saved ? JSON.parse(saved) : { color: '#FFFFFF', transparency: 0 };
+    if (saved) return JSON.parse(saved);
+    return isDarkMode
+      ? { color: '#0f172a', transparency: 0 }
+      : { color: '#FFFFFF', transparency: 0 };
   });
 
   const [filterPane, setFilterPane] = useState(() => {
     const saved = localStorage.getItem('pbi-theme-filter-pane');
-    return saved ? JSON.parse(saved) : { backgroundColor: '#FFFFFF', foreColor: '#000000', transparency: 0 };
+    if (saved) return JSON.parse(saved);
+    return isDarkMode
+      ? { backgroundColor: '#1e293b', foreColor: '#ffffff', transparency: 0 }
+      : { backgroundColor: '#FFFFFF', foreColor: '#000000', transparency: 0 };
   });
 
   // Persistence Effects

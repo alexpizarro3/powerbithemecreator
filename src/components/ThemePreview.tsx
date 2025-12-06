@@ -64,6 +64,11 @@ export const ThemePreview = ({
                     }}
                 >
                     <div className="space-y-6">
+                        <div className="flex justify-between items-center">
+                            <h1 className={`text-3xl font-bold ${theme.text}`}>Executive Dashboard</h1>
+                            <p className={`text-sm ${theme.subText}`}>Last updated: Today</p>
+                        </div>
+
                         {/* KPI Cards */}
                         <div className="grid grid-cols-3 gap-4">
                             {[
