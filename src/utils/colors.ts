@@ -10,7 +10,7 @@ export const hexToRgb = (hex: string): { r: number, g: number, b: number } | nul
     } : null;
 };
 
-const rgbToHsl = (r: number, g: number, b: number): { h: number, s: number, l: number } => {
+export const rgbToHsl = (r: number, g: number, b: number): { h: number, s: number, l: number } => {
     r /= 255; g /= 255; b /= 255;
     const max = Math.max(r, g, b), min = Math.min(r, g, b);
     let h = 0, s = 0, l = (max + min) / 2;
@@ -28,7 +28,7 @@ const rgbToHsl = (r: number, g: number, b: number): { h: number, s: number, l: n
     return { h: h * 360, s: s * 100, l: l * 100 };
 };
 
-const hslToRgb = (h: number, s: number, l: number): { r: number, g: number, b: number } => {
+export const hslToRgb = (h: number, s: number, l: number): { r: number, g: number, b: number } => {
     h /= 360; s /= 100; l /= 100;
     let r, g, b;
 

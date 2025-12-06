@@ -1,8 +1,14 @@
+import type { TypographyState } from "../components/TypographySettings";
+
 export interface ThemeOptions {
     name: string;
     colors: string[];
+    bad?: string;
+    neutral?: string;
+    good?: string;
     borderRadius?: number;
-    fontFamily?: string;
+    fontFamily?: string; // Legacy support
+    typography?: TypographyState;
     isDarkMode?: boolean;
     pageBackground?: {
         color: string;
@@ -18,9 +24,13 @@ export interface ThemeOptions {
 export interface PowerBITheme {
     name: string;
     dataColors: string[];
+    bad?: string;
+    neutral?: string;
+    good?: string;
     background?: string;
     foreground?: string;
     tableAccent?: string;
+    textClasses?: any;
     visualStyles?: any;
 }
 
@@ -28,8 +38,12 @@ export const generateThemeJSON = (options: ThemeOptions): PowerBITheme => {
     const {
         name,
         colors,
+        bad,
+        neutral,
+        good,
         borderRadius = 0,
         fontFamily = "Segoe UI",
+        typography,
         isDarkMode = false,
         pageBackground,
         filterPane
@@ -37,20 +51,39 @@ export const generateThemeJSON = (options: ThemeOptions): PowerBITheme => {
 
     const background = isDarkMode ? "#1A1A1A" : "#FFFFFF";
     const foreground = isDarkMode ? "#FFFFFF" : "#252423";
+    const globalFont = typography?.global || fontFamily;
+
+    // Helper to create text class object
+    const createTextClass = (settings: { fontFamily: string; fontSize: number; color: string }) => ({
+        fontFace: settings.fontFamily || globalFont,
+        fontSize: settings.fontSize,
+        color: settings.color
+    });
+
+    const textClasses = typography ? {
+        title: createTextClass(typography.title),
+        callout: createTextClass(typography.callout),
+        label: createTextClass(typography.label),
+        header: createTextClass(typography.header)
+    } : undefined;
 
     return {
         name: name,
         dataColors: colors,
+        bad: bad,
+        neutral: neutral,
+        good: good,
         background: background,
         foreground: foreground,
         tableAccent: colors[0],
+        textClasses: textClasses,
         visualStyles: {
             "*": {
                 "*": {
                     "*": [
                         {
                             fontSize: 10,
-                            fontFamily: fontFamily,
+                            fontFamily: globalFont,
                             color: { solid: { color: foreground } },
                             borderRadius: [{ px: borderRadius }]
                         }
@@ -77,7 +110,8 @@ export const generateThemeJSON = (options: ThemeOptions): PowerBITheme => {
                             "backgroundColor": { "solid": { "color": filterPane?.backgroundColor || (isDarkMode ? "#252423" : "#FFFFFF") } },
                             "foregroundColor": { "solid": { "color": filterPane?.foreColor || foreground } },
                             "transparency": filterPane?.transparency || 0,
-                            "textSize": 10
+                            "textSize": 10,
+                            "fontFamily": globalFont
                         }
                     ]
                 }

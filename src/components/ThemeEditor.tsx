@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { Download, Settings, Type, Square } from 'lucide-react';
+import { Download, Settings, Type, Square, Copy, Check, TrendingUp } from 'lucide-react';
 import type { ColorItem } from './PaletteGenerator';
 import { generateThemeJSON, downloadTheme, type ThemeOptions } from '../utils/powerbi-theme';
 import { ThemeImporter } from './ThemeImporter';
 import { PageBackgroundSettings } from './PageBackgroundSettings';
 import { FilterPaneSettings } from './FilterPaneSettings';
+import { TypographySettings, type TypographyState } from './TypographySettings';
+import { DataGradients } from './DataGradients';
 
 interface ThemeEditorProps {
     colors: ColorItem[];
@@ -13,23 +15,15 @@ interface ThemeEditorProps {
     setIsDarkMode: (isDark: boolean) => void;
     borderRadius: number;
     setBorderRadius: (radius: number) => void;
-    fontFamily: string;
-    setFontFamily: (font: string) => void;
+    typography: TypographyState;
+    setTypography: (typography: TypographyState) => void;
     pageBackground: { color: string; transparency: number };
     setPageBackground: (settings: { color: string; transparency: number }) => void;
     filterPane: { backgroundColor: string; foreColor: string; transparency: number };
     setFilterPane: (settings: { backgroundColor: string; foreColor: string; transparency: number }) => void;
+    dataGradients: { bad: string; neutral: string; good: string };
+    setDataGradients: (gradients: { bad: string; neutral: string; good: string }) => void;
 }
-
-const FONT_OPTIONS = [
-    "Segoe UI",
-    "Arial",
-    "Calibri",
-    "DIN",
-    "Georgia",
-    "Verdana",
-    "Trebuchet MS"
-];
 
 export const ThemeEditor = ({
     colors,
@@ -38,15 +32,35 @@ export const ThemeEditor = ({
     setIsDarkMode,
     borderRadius,
     setBorderRadius,
-    fontFamily,
-    setFontFamily,
+    typography,
+    setTypography,
     pageBackground,
     setPageBackground,
     filterPane,
-    setFilterPane
+    setFilterPane,
+    dataGradients,
+    setDataGradients
 }: ThemeEditorProps) => {
     const [themeName, setThemeName] = useState("My Custom Theme");
-    const [activeTab, setActiveTab] = useState<'general' | 'pages' | 'filter'>('general');
+    const [activeTab, setActiveTab] = useState<'general' | 'typography' | 'pages' | 'filter' | 'gradients' | 'json'>('general');
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = () => {
+        const palette = colors.map(c => c.hex);
+        const theme = generateThemeJSON({
+            name: themeName,
+            colors: palette,
+            borderRadius,
+            typography,
+            isDarkMode,
+            pageBackground,
+            filterPane,
+            ...dataGradients
+        });
+        navigator.clipboard.writeText(JSON.stringify(theme, null, 2));
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
 
     const handleExport = () => {
         const palette = colors.map(c => c.hex);
@@ -54,17 +68,27 @@ export const ThemeEditor = ({
             name: themeName,
             colors: palette,
             borderRadius,
-            fontFamily,
+            typography,
             isDarkMode,
             pageBackground,
-            filterPane
+            filterPane,
+            ...dataGradients
         });
         downloadTheme(theme);
     };
+
     const handleImport = (theme: ThemeOptions) => {
         setThemeName(theme.name);
         if (theme.borderRadius !== undefined) setBorderRadius(theme.borderRadius);
-        if (theme.fontFamily) setFontFamily(theme.fontFamily);
+
+        // Handle legacy font import
+        if (theme.fontFamily) {
+            setTypography({
+                ...typography,
+                global: theme.fontFamily
+            });
+        }
+
         if (theme.isDarkMode !== undefined) setIsDarkMode(theme.isDarkMode);
         if (theme.pageBackground) setPageBackground(theme.pageBackground);
         if (theme.filterPane) setFilterPane(theme.filterPane);
@@ -77,6 +101,14 @@ export const ThemeEditor = ({
             }));
             setColors(newColors);
         }
+
+        if (theme.bad && theme.neutral && theme.good) {
+            setDataGradients({
+                bad: theme.bad,
+                neutral: theme.neutral,
+                good: theme.good
+            });
+        }
     };
 
     return (
@@ -86,17 +118,19 @@ export const ThemeEditor = ({
                 <h2 className="text-xl font-semibold text-white/90">Theme Settings</h2>
             </div>
 
-            <div className="flex gap-2 mb-6 bg-black/20 p-1 rounded-xl">
-                {(['general', 'pages', 'filter'] as const).map((tab) => (
+            <div className="flex gap-2 mb-6 bg-black/20 p-1 rounded-xl overflow-x-auto custom-scrollbar">
+                {(['general', 'typography', 'pages', 'filter', 'gradients', 'json'] as const).map((tab) => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${activeTab === tab
-                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all capitalize whitespace-nowrap ${activeTab === tab
+                            ? 'bg-blue-600 text-white shadow-lg'
                             : 'text-slate-400 hover:text-white hover:bg-white/5'
                             }`}
                     >
-                        {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                        {tab === 'typography' && <Type size={14} />}
+                        {tab === 'gradients' && <TrendingUp size={14} />}
+                        {tab}
                     </button>
                 ))}
             </div>
@@ -115,22 +149,6 @@ export const ThemeEditor = ({
                                 className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
                                 placeholder="Enter theme name..."
                             />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-slate-400 mb-2 ml-1 flex items-center gap-2">
-                                <Type size={14} />
-                                Font Family
-                            </label>
-                            <select
-                                value={fontFamily}
-                                onChange={(e) => setFontFamily(e.target.value)}
-                                className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all appearance-none cursor-pointer"
-                            >
-                                {FONT_OPTIONS.map(font => (
-                                    <option key={font} value={font} className="bg-slate-900 text-white">{font}</option>
-                                ))}
-                            </select>
                         </div>
 
                         <div>
@@ -154,6 +172,15 @@ export const ThemeEditor = ({
                     </div>
                 )}
 
+                {activeTab === 'typography' && (
+                    <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        <TypographySettings
+                            typography={typography}
+                            onChange={setTypography}
+                        />
+                    </div>
+                )}
+
                 {activeTab === 'pages' && (
                     <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                         <PageBackgroundSettings
@@ -172,6 +199,44 @@ export const ThemeEditor = ({
                             transparency={filterPane.transparency}
                             onChange={setFilterPane}
                         />
+                    </div>
+                )}
+
+                {activeTab === 'gradients' && (
+                    <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        <DataGradients
+                            gradients={dataGradients}
+                            onChange={setDataGradients}
+                        />
+                    </div>
+                )}
+
+                {activeTab === 'json' && (
+                    <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 relative group">
+                        <div className="absolute right-4 top-4 z-10">
+                            <button
+                                onClick={handleCopy}
+                                className={`p-2 rounded-lg transition-all ${copied
+                                    ? 'bg-green-500/20 text-green-400'
+                                    : 'bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white'
+                                    }`}
+                                title="Copy to Clipboard"
+                            >
+                                {copied ? <Check size={16} /> : <Copy size={16} />}
+                            </button>
+                        </div>
+                        <pre className="bg-black/30 rounded-xl p-4 text-xs font-mono text-slate-300 overflow-auto max-h-[400px] custom-scrollbar border border-white/5">
+                            {JSON.stringify(generateThemeJSON({
+                                name: themeName,
+                                colors: colors.map(c => c.hex),
+                                borderRadius,
+                                typography,
+                                isDarkMode,
+                                pageBackground,
+                                filterPane,
+                                ...dataGradients
+                            }), null, 2)}
+                        </pre>
                     </div>
                 )}
 

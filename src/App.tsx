@@ -5,6 +5,7 @@ import { ThemeEditor } from './components/ThemeEditor';
 import { TrendingPalettes } from './components/TrendingPalettes';
 import { Footer } from './components/Footer';
 import { suggestThemeSettings } from './utils/theme-suggestions';
+import { type TypographyState } from './components/TypographySettings';
 
 function App() {
   // Load initial state from localStorage or use default
@@ -30,33 +31,79 @@ function App() {
     return saved ? Number(saved) : 0;
   });
 
-  const [fontFamily, setFontFamily] = useState(() => {
-    return localStorage.getItem('pbi-theme-font') || "Segoe UI";
+  const [typography, setTypography] = useState<TypographyState>(() => {
+    const saved = localStorage.getItem('pbi-theme-typography');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Migration: If colors are explicitly black (old default), reset to auto
+      const migrateColor = (c: string) => c === "#000000" ? "" : c;
+
+      return {
+        ...parsed,
+        title: { ...parsed.title, color: migrateColor(parsed.title.color) },
+        callout: { ...parsed.callout, color: migrateColor(parsed.callout.color) },
+        label: { ...parsed.label, color: migrateColor(parsed.label.color) },
+        header: { ...parsed.header, color: migrateColor(parsed.header.color) }
+      };
+    }
+
+    // Migration: Check for old font family setting
+    const oldFont = localStorage.getItem('pbi-theme-font') || "Segoe UI";
+
+    return {
+      global: oldFont,
+      title: { fontFamily: "", fontSize: 14, color: "" },
+      callout: { fontFamily: "", fontSize: 45, color: "" },
+      label: { fontFamily: "", fontSize: 10, color: "" },
+      header: { fontFamily: "", fontSize: 12, color: "" }
+    };
   });
 
   const [pageBackground, setPageBackground] = useState(() => {
     const saved = localStorage.getItem('pbi-theme-page-bg');
-    if (saved) return JSON.parse(saved);
-    return isDarkMode
-      ? { color: '#0f172a', transparency: 0 }
-      : { color: '#FFFFFF', transparency: 0 };
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // If saved value is white (light mode default) and we're in dark mode, migrate to dark background
+      if (parsed.color === '#FFFFFF' && parsed.transparency === 0) {
+        return { color: '#0f172a', transparency: 0 };
+      }
+      return parsed;
+    }
+    // Default to dark mode background since isDarkMode is true
+    return { color: '#0f172a', transparency: 0 };
   });
 
   const [filterPane, setFilterPane] = useState(() => {
     const saved = localStorage.getItem('pbi-theme-filter-pane');
-    if (saved) return JSON.parse(saved);
-    return isDarkMode
-      ? { backgroundColor: '#1e293b', foreColor: '#ffffff', transparency: 0 }
-      : { backgroundColor: '#FFFFFF', foreColor: '#000000', transparency: 0 };
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // If saved value is white/black (light mode default) and we're in dark mode, migrate to dark filter pane
+      if (parsed.backgroundColor === '#FFFFFF' && parsed.foreColor === '#000000') {
+        return { backgroundColor: '#1e293b', foreColor: '#ffffff', transparency: 0 };
+      }
+      return parsed;
+    }
+    // Default to dark mode filter pane since isDarkMode is true
+    return { backgroundColor: '#1e293b', foreColor: '#ffffff', transparency: 0 };
+  });
+
+  const [dataGradients, setDataGradients] = useState(() => {
+    const saved = localStorage.getItem('pbi-theme-gradients');
+    return saved ? JSON.parse(saved) : {
+      bad: '#D64554',
+      neutral: '#F6C244',
+      good: '#1AAB40'
+    };
   });
 
   // Persistence Effects
   useEffect(() => { localStorage.setItem('pbi-theme-colors', JSON.stringify(colors)); }, [colors]);
   useEffect(() => { localStorage.setItem('pbi-theme-darkmode', JSON.stringify(isDarkMode)); }, [isDarkMode]);
   useEffect(() => { localStorage.setItem('pbi-theme-radius', borderRadius.toString()); }, [borderRadius]);
-  useEffect(() => { localStorage.setItem('pbi-theme-font', fontFamily); }, [fontFamily]);
+  useEffect(() => { localStorage.setItem('pbi-theme-typography', JSON.stringify(typography)); }, [typography]);
   useEffect(() => { localStorage.setItem('pbi-theme-page-bg', JSON.stringify(pageBackground)); }, [pageBackground]);
   useEffect(() => { localStorage.setItem('pbi-theme-filter-pane', JSON.stringify(filterPane)); }, [filterPane]);
+  useEffect(() => { localStorage.setItem('pbi-theme-gradients', JSON.stringify(dataGradients)); }, [dataGradients]);
 
   // Undo/Redo Logic
   const handleSetColors = (newColors: ColorItem[], addToHistory = true) => {
@@ -131,12 +178,14 @@ function App() {
             setIsDarkMode={setIsDarkMode}
             borderRadius={borderRadius}
             setBorderRadius={setBorderRadius}
-            fontFamily={fontFamily}
-            setFontFamily={setFontFamily}
+            typography={typography}
+            setTypography={setTypography}
             pageBackground={pageBackground}
             setPageBackground={setPageBackground}
             filterPane={filterPane}
             setFilterPane={setFilterPane}
+            dataGradients={dataGradients}
+            setDataGradients={setDataGradients}
           />
         </div>
         <div className="lg:col-span-8 space-y-8">
@@ -145,9 +194,10 @@ function App() {
             isDarkMode={isDarkMode}
             setIsDarkMode={setIsDarkMode}
             borderRadius={borderRadius}
-            fontFamily={fontFamily}
+            typography={typography}
             pageBackground={pageBackground}
             filterPane={filterPane}
+            dataGradients={dataGradients}
           />
         </div>
       </main>

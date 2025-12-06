@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { RefreshCw, Lock, Unlock, GripVertical, ChevronDown, LayoutTemplate, AlertTriangle, Image as ImageIcon, Undo, Redo } from 'lucide-react';
+import { RefreshCw, Lock, Unlock, GripVertical, ChevronDown, LayoutTemplate, AlertTriangle, Image as ImageIcon, Undo, Redo, Sliders } from 'lucide-react';
 import { ImageToPalette } from './ImageToPalette';
+import { AdvancedColorPicker } from './AdvancedColorPicker';
 import {
     DndContext,
     closestCenter,
@@ -34,6 +35,7 @@ interface SortableColorProps {
 }
 
 const SortableColor = ({ color, toggleLock, updateColor }: SortableColorProps) => {
+    const [showPicker, setShowPicker] = useState(false);
     const {
         attributes,
         listeners,
@@ -73,7 +75,9 @@ const SortableColor = ({ color, toggleLock, updateColor }: SortableColorProps) =
                 <div
                     className="w-12 h-12 rounded-xl shadow-lg ring-1 ring-white/10 cursor-pointer overflow-hidden transition-transform group-hover/color:scale-105"
                     style={{ backgroundColor: color.hex }}
+                    onClick={() => setShowPicker(!showPicker)}
                 >
+                    {/* Native picker as fallback/hidden input */}
                     <input
                         type="color"
                         value={color.hex}
@@ -86,15 +90,30 @@ const SortableColor = ({ color, toggleLock, updateColor }: SortableColorProps) =
                         <AlertTriangle size={12} />
                     </div>
                 )}
+
+                {showPicker && (
+                    <AdvancedColorPicker
+                        color={color.hex}
+                        onChange={(newHex) => updateColor(color.id, newHex)}
+                        onClose={() => setShowPicker(false)}
+                    />
+                )}
             </div>
 
-            <div className="flex-1">
+            <div className="flex-1 flex items-center gap-2">
                 <input
                     type="text"
                     value={color.hex}
                     onChange={(e) => updateColor(color.id, e.target.value)}
                     className="bg-transparent font-mono text-lg uppercase w-full focus:outline-none text-slate-200 group-hover:text-white transition-colors"
                 />
+                <button
+                    onClick={() => setShowPicker(!showPicker)}
+                    className={`p-2 rounded-lg transition-colors ${showPicker ? 'text-blue-400 bg-white/10' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
+                    title="Advanced Color Editor"
+                >
+                    <Sliders size={16} />
+                </button>
             </div>
 
             <button
