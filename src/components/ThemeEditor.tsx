@@ -11,6 +11,8 @@ import { DataGradients } from './DataGradients';
 interface ThemeEditorProps {
     colors: ColorItem[];
     setColors: (colors: ColorItem[]) => void;
+    themeName: string;
+    setThemeName: (name: string) => void;
     isDarkMode: boolean;
     setIsDarkMode: (isDark: boolean) => void;
     borderRadius: number;
@@ -28,6 +30,8 @@ interface ThemeEditorProps {
 export const ThemeEditor = ({
     colors,
     setColors,
+    themeName,
+    setThemeName,
     isDarkMode,
     setIsDarkMode,
     borderRadius,
@@ -41,7 +45,7 @@ export const ThemeEditor = ({
     dataGradients,
     setDataGradients
 }: ThemeEditorProps) => {
-    const [themeName, setThemeName] = useState("My Custom Theme");
+    // themeName state removed
     const [activeTab, setActiveTab] = useState<'general' | 'typography' | 'pages' | 'filter' | 'gradients' | 'json'>('general');
     const [copied, setCopied] = useState(false);
 

@@ -30,7 +30,9 @@ export interface PowerBITheme {
     background?: string;
     foreground?: string;
     tableAccent?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     textClasses?: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     visualStyles?: any;
     isDarkMode?: boolean;
 }
@@ -56,6 +58,7 @@ export const generateThemeJSON = (options: ThemeOptions): PowerBITheme => {
 
     // Helper to create text class object
     const createTextClass = (settings: { fontFamily: string; fontSize: number; color: string }) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const style: any = {
             fontFace: settings.fontFamily || globalFont,
             fontSize: settings.fontSize
@@ -137,6 +140,7 @@ export const downloadTheme = (theme: PowerBITheme) => {
     downloadAnchorNode.remove();
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const parseThemeJSON = (json: any): ThemeOptions => {
     // Extract basic properties
     const name = json.name || "Imported Theme";
@@ -168,6 +172,7 @@ export const parseThemeJSON = (json: any): ThemeOptions => {
 
         // Parse Text Classes if present
         if (json.textClasses) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const parseClass = (style: any, defaultSize: number) => ({
                 fontFamily: style?.fontFace || "",
                 fontSize: style?.fontSize || defaultSize,

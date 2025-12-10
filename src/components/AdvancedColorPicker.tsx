@@ -14,14 +14,16 @@ export const AdvancedColorPicker = ({ color, onChange, onClose }: AdvancedColorP
     const wrapperRef = useRef<HTMLDivElement>(null);
 
     // Initialize HSL from color prop
-    useEffect(() => {
+    // Derived state pattern: Update local state when prop changes
+    const [prevColor, setPrevColor] = useState(color);
+    if (color !== prevColor) {
+        setPrevColor(color);
+        setHexInput(color);
         const rgb = hexToRgb(color);
         if (rgb) {
-            const newHsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
-            setHsl(newHsl);
-            setHexInput(color);
+            setHsl(rgbToHsl(rgb.r, rgb.g, rgb.b));
         }
-    }, [color]);
+    }
 
     // Handle outside click to close
     useEffect(() => {
@@ -60,7 +62,7 @@ export const AdvancedColorPicker = ({ color, onChange, onClose }: AdvancedColorP
             const eyeDropper = new window.EyeDropper();
             const result = await eyeDropper.open();
             handleHexChange(result.sRGBHex);
-        } catch (e) {
+        } catch {
             console.log('EyeDropper canceled');
         }
     };
@@ -170,6 +172,7 @@ export const AdvancedColorPicker = ({ color, onChange, onClose }: AdvancedColorP
 // Add type definition for EyeDropper API
 declare global {
     interface Window {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         EyeDropper?: any;
     }
 }
