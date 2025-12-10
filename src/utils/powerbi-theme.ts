@@ -32,6 +32,7 @@ export interface PowerBITheme {
     tableAccent?: string;
     textClasses?: any;
     visualStyles?: any;
+    isDarkMode?: boolean;
 }
 
 export const generateThemeJSON = (options: ThemeOptions): PowerBITheme => {
@@ -121,7 +122,8 @@ export const generateThemeJSON = (options: ThemeOptions): PowerBITheme => {
                     ]
                 }
             }
-        }
+        },
+        isDarkMode: isDarkMode
     };
 };
 
@@ -210,6 +212,11 @@ export const parseThemeJSON = (json: any): ThemeOptions => {
         }
     } catch (e) {
         console.warn("Failed to parse detailed styles", e);
+    }
+
+    // Explicit override if the property exists (custom to this tool)
+    if (json.isDarkMode !== undefined) {
+        isDarkMode = json.isDarkMode;
     }
 
     return {
