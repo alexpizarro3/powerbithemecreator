@@ -54,11 +54,16 @@ export const generateThemeJSON = (options: ThemeOptions): PowerBITheme => {
     const globalFont = typography?.global || fontFamily;
 
     // Helper to create text class object
-    const createTextClass = (settings: { fontFamily: string; fontSize: number; color: string }) => ({
-        fontFace: settings.fontFamily || globalFont,
-        fontSize: settings.fontSize,
-        color: settings.color
-    });
+    const createTextClass = (settings: { fontFamily: string; fontSize: number; color: string }) => {
+        const style: any = {
+            fontFace: settings.fontFamily || globalFont,
+            fontSize: settings.fontSize
+        };
+        if (settings.color) {
+            style.color = settings.color;
+        }
+        return style;
+    };
 
     const textClasses = typography ? {
         title: createTextClass(typography.title),
@@ -141,6 +146,7 @@ export const parseThemeJSON = (json: any): ThemeOptions => {
     let isDarkMode = false;
     let pageBackground = undefined;
     let filterPane = undefined;
+    let typography: TypographyState | undefined = undefined;
 
     try {
         const globalStyles = json.visualStyles?.["*"]?.["*"]?.["*"]?.[0];
@@ -156,6 +162,23 @@ export const parseThemeJSON = (json: any): ThemeOptions => {
             if (globalStyles.fontFamily) {
                 fontFamily = globalStyles.fontFamily;
             }
+        }
+
+        // Parse Text Classes if present
+        if (json.textClasses) {
+            const parseClass = (style: any, defaultSize: number) => ({
+                fontFamily: style?.fontFace || "",
+                fontSize: style?.fontSize || defaultSize,
+                color: style?.color || ""
+            });
+
+            typography = {
+                global: fontFamily, // Will be updated if handleImport uses legacy logic too, but this is a good start
+                title: parseClass(json.textClasses.title, 14),
+                callout: parseClass(json.textClasses.callout, 45),
+                label: parseClass(json.textClasses.label, 10),
+                header: parseClass(json.textClasses.header, 12)
+            };
         }
 
         // Extract Page Background
@@ -196,6 +219,7 @@ export const parseThemeJSON = (json: any): ThemeOptions => {
         fontFamily,
         isDarkMode,
         pageBackground,
-        filterPane
+        filterPane,
+        typography
     };
 };

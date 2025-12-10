@@ -81,8 +81,11 @@ export const ThemeEditor = ({
         setThemeName(theme.name);
         if (theme.borderRadius !== undefined) setBorderRadius(theme.borderRadius);
 
-        // Handle legacy font import
-        if (theme.fontFamily) {
+        // Handle imported typography
+        if (theme.typography) {
+            setTypography(theme.typography);
+        } else if (theme.fontFamily) {
+            // Legacy fallback
             setTypography({
                 ...typography,
                 global: theme.fontFamily
