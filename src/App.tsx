@@ -53,7 +53,7 @@ function App() {
     return {
       global: oldFont,
       title: { fontFamily: "", fontSize: 14, color: "" },
-      callout: { fontFamily: "", fontSize: 45, color: "" },
+      callout: { fontFamily: "", fontSize: 20, color: "" },
       label: { fontFamily: "", fontSize: 10, color: "" },
       header: { fontFamily: "", fontSize: 12, color: "" }
     };
