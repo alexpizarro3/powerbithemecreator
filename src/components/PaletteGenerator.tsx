@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { RefreshCw, Lock, Unlock, GripVertical, ChevronDown, LayoutTemplate, AlertTriangle, Image as ImageIcon, Undo, Redo, Sliders } from 'lucide-react';
+import { RefreshCw, Lock, Unlock, GripVertical, ChevronDown, LayoutTemplate, AlertTriangle, Image as ImageIcon, Undo, Redo, Sliders, HelpCircle, Keyboard } from 'lucide-react';
 import { ImageToPalette } from './ImageToPalette';
 import { AdvancedColorPicker } from './AdvancedColorPicker';
 import {
@@ -248,6 +248,29 @@ export const PaletteGenerator = ({
             <div className="flex flex-col gap-4 mb-6">
                 <div className="flex justify-between items-center">
                     <h2 className="text-xl font-semibold text-white/90">Color Palette</h2>
+
+                    <div className="relative group/help">
+                        <HelpCircle size={18} className="text-slate-400 hover:text-white cursor-help transition-colors" />
+                        <div className="absolute right-0 top-full mt-2 w-56 p-4 bg-slate-800/95 backdrop-blur-xl rounded-xl shadow-2xl border border-white/10 text-xs text-slate-300 hidden group-hover/help:block z-50">
+                            <p className="font-semibold text-white mb-3 text-sm flex items-center gap-2">
+                                <Keyboard size={14} className="text-blue-400" /> Keyboard Shortcuts
+                            </p>
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center bg-white/5 p-2 rounded-lg">
+                                    <span>Generate New</span>
+                                    <kbd className="bg-white/10 px-2 py-1 rounded text-[10px] font-mono font-bold text-white border-b border-white/20">Space</kbd>
+                                </div>
+                                <div className="flex justify-between items-center bg-white/5 p-2 rounded-lg">
+                                    <span>Lock Color</span>
+                                    <kbd className="bg-white/10 px-2 py-1 rounded text-[10px] font-mono font-bold text-white border-b border-white/20">Click Lock</kbd>
+                                </div>
+                                <div className="flex justify-between items-center bg-white/5 p-2 rounded-lg">
+                                    <span>Reorder</span>
+                                    <kbd className="bg-white/10 px-2 py-1 rounded text-[10px] font-mono font-bold text-white border-b border-white/20">Drag handle</kbd>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">

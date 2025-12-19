@@ -30,7 +30,8 @@ function App() {
     filterPane,
     setFilterPane,
     dataGradients,
-    setDataGradients
+    setDataGradients,
+    reset
   } = useThemeState();
 
   const handleImport = (theme: ThemeOptions) => {
@@ -92,6 +93,7 @@ function App() {
           filterPane={filterPane}
           dataGradients={dataGradients}
           onImport={handleImport}
+          onReset={reset}
         />
       </header>
 

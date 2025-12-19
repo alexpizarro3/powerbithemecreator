@@ -169,6 +169,50 @@ export const useThemeState = () => {
         filterPane,
         setFilterPane,
         dataGradients,
-        setDataGradients
+        setDataGradients,
+        reset: () => {
+            // Clear all local storage
+            localStorage.removeItem('pbi-theme-colors');
+            localStorage.removeItem('pbi-theme-darkmode');
+            localStorage.removeItem('pbi-theme-radius');
+            localStorage.removeItem('pbi-theme-typography');
+            localStorage.removeItem('pbi-theme-page-bg');
+            localStorage.removeItem('pbi-theme-filter-pane');
+            localStorage.removeItem('pbi-theme-gradients');
+
+            // Reset state to defaults
+            setColors([
+                { id: '1', hex: '#4DEEEA', locked: false },
+                { id: '2', hex: '#74EE15', locked: false },
+                { id: '3', hex: '#FFE700', locked: false },
+                { id: '4', hex: '#F000FF', locked: false },
+                { id: '5', hex: '#001EFF', locked: false },
+            ]);
+            setThemeName("My Custom Theme");
+            setIsDarkMode(true);
+            setBorderRadius(0);
+            setTypography({
+                global: "Segoe UI",
+                title: { fontFamily: "", fontSize: 14, color: "" },
+                callout: { fontFamily: "", fontSize: 20, color: "" },
+                label: { fontFamily: "", fontSize: 10, color: "" },
+                header: { fontFamily: "", fontSize: 12, color: "" }
+            });
+            setPageBackground({ color: '#0f172a', transparency: 0 });
+            setFilterPane({ backgroundColor: '#1e293b', foreColor: '#ffffff', transparency: 0 });
+            setDataGradients({
+                bad: '#D64554',
+                neutral: '#F6C244',
+                good: '#1AAB40'
+            });
+            setHistory([[
+                { id: '1', hex: '#4DEEEA', locked: false },
+                { id: '2', hex: '#74EE15', locked: false },
+                { id: '3', hex: '#FFE700', locked: false },
+                { id: '4', hex: '#F000FF', locked: false },
+                { id: '5', hex: '#001EFF', locked: false },
+            ]]);
+            setHistoryIndex(0);
+        }
     };
 };
