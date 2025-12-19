@@ -1,4 +1,4 @@
-export type HarmonyMode = 'random' | 'monochromatic' | 'analogous' | 'complementary' | 'triadic' | 'split-complementary';
+export type HarmonyMode = 'random' | 'monochromatic' | 'analogous' | 'complementary' | 'triadic' | 'split-complementary' | 'original';
 
 // Color conversion helpers
 export const hexToRgb = (hex: string): { r: number, g: number, b: number } | null => {

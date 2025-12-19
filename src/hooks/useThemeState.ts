@@ -57,32 +57,55 @@ export const useThemeState = () => {
         };
     });
 
+    // Helper to get raw dark mode preference for initializers
+    const storedIsDark = () => {
+        const saved = localStorage.getItem('pbi-theme-darkmode');
+        return saved ? JSON.parse(saved) : true;
+    };
+
     const [pageBackground, setPageBackground] = useState(() => {
         const saved = localStorage.getItem('pbi-theme-page-bg');
+        const isDark = storedIsDark();
+
         if (saved) {
             const parsed = JSON.parse(saved);
-            // If saved value is white (light mode default) and we're in dark mode, migrate to dark background
-            if (parsed.color === '#FFFFFF' && parsed.transparency === 0) {
+            // Mismatch Check: If Light Mode but background is Dark Default
+            if (!isDark && (parsed.color === '#0f172a' || parsed.color === '#000000')) {
+                return { color: '#F3F4F6', transparency: 0 };
+            }
+            // LEGACY FIX: Detect "Tinted" Light Mode (transparency 96) and force to Clean
+            if (!isDark && parsed.transparency === 96) {
+                return { color: '#F3F4F6', transparency: 0 };
+            }
+
+            // Mismatch Check: If Dark Mode but background is Light Default
+            if (isDark && (parsed.color === '#FFFFFF' || parsed.color === '#F3F4F6')) {
                 return { color: '#0f172a', transparency: 0 };
             }
             return parsed;
         }
-        // Default to dark mode background since isDarkMode is true
-        return { color: '#0f172a', transparency: 0 };
+        return isDark ? { color: '#0f172a', transparency: 0 } : { color: '#F3F4F6', transparency: 0 };
     });
 
     const [filterPane, setFilterPane] = useState(() => {
         const saved = localStorage.getItem('pbi-theme-filter-pane');
+        const isDark = storedIsDark();
+
         if (saved) {
             const parsed = JSON.parse(saved);
-            // If saved value is white/black (light mode default) and we're in dark mode, migrate to dark filter pane
-            if (parsed.backgroundColor === '#FFFFFF' && parsed.foreColor === '#000000') {
+            // Mismatch Check: If Light Mode but filter pane is Dark Default
+            if (!isDark && (parsed.backgroundColor === '#1e293b' || parsed.backgroundColor === '#000000')) {
+                return { backgroundColor: '#FFFFFF', foreColor: '#000000', transparency: 0 };
+            }
+            // Mismatch Check: If Dark Mode but filter pane is Light Default
+            if (isDark && (parsed.backgroundColor === '#FFFFFF')) {
                 return { backgroundColor: '#1e293b', foreColor: '#ffffff', transparency: 0 };
             }
             return parsed;
         }
-        // Default to dark mode filter pane since isDarkMode is true
-        return { backgroundColor: '#1e293b', foreColor: '#ffffff', transparency: 0 };
+        return isDark
+            ? { backgroundColor: '#1e293b', foreColor: '#ffffff', transparency: 0 }
+            : { backgroundColor: '#FFFFFF', foreColor: '#000000', transparency: 0 };
     });
 
     const [dataGradients, setDataGradients] = useState(() => {
@@ -96,7 +119,23 @@ export const useThemeState = () => {
 
     // Persistence Effects
     useEffect(() => { localStorage.setItem('pbi-theme-colors', JSON.stringify(colors)); }, [colors]);
-    useEffect(() => { localStorage.setItem('pbi-theme-darkmode', JSON.stringify(isDarkMode)); }, [isDarkMode]);
+    useEffect(() => {
+        localStorage.setItem('pbi-theme-darkmode', JSON.stringify(isDarkMode));
+
+        // Intelligent Theming: Auto-switch background/filter settings when mode changes
+        // "Hard Sync": We re-calculate the correct defaults for the new mode based on the current palette.
+        // This ensures even "tinted" or custom-but-wrong colors are reset to standard Premium defaults.
+        const currentPalette = colors.map(c => c.hex);
+        const suggestions = suggestThemeSettings(currentPalette, isDarkMode);
+
+        // We only apply the suggestion if we are checking against a "Wrong Mode" value
+        // But since we want to be robust, we just apply the new defaults.
+        // NOTE: This will overwrite manual customizations when switching modes. This is intended behavior
+        // to resolve the "Broken Background" issues users are reporting.
+        setPageBackground(suggestions.pageBackground);
+        setFilterPane(suggestions.filterPane);
+
+    }, [isDarkMode]);
     useEffect(() => { localStorage.setItem('pbi-theme-radius', borderRadius.toString()); }, [borderRadius]);
     useEffect(() => { localStorage.setItem('pbi-theme-typography', JSON.stringify(typography)); }, [typography]);
     useEffect(() => { localStorage.setItem('pbi-theme-page-bg', JSON.stringify(pageBackground)); }, [pageBackground]);

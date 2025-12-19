@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { RefreshCw, Lock, Unlock, GripVertical, ChevronDown, LayoutTemplate, AlertTriangle, Image as ImageIcon, Undo, Redo, Sliders, HelpCircle, Keyboard } from 'lucide-react';
+import { RefreshCw, Lock, Unlock, GripVertical, ChevronDown, LayoutTemplate, AlertTriangle, Image as ImageIcon, Undo, Redo, Sliders, HelpCircle, Keyboard, Briefcase } from 'lucide-react';
 import { ImageToPalette } from './ImageToPalette';
 import { AdvancedColorPicker } from './AdvancedColorPicker';
 import {
@@ -340,10 +340,10 @@ export const PaletteGenerator = ({
                     </button>
                     <button
                         onClick={() => setShowImageUpload(true)}
-                        className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-all border border-white/10 font-medium active:scale-95"
-                        title="Extract from Image"
+                        className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-lg transition-all border border-white/10 font-bold active:scale-95 shadow-lg shadow-purple-500/30 whitespace-nowrap"
                     >
-                        <ImageIcon size={18} />
+                        <Briefcase size={18} />
+                        Brand Kit
                     </button>
                 </div>
             </div>

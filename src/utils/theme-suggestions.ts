@@ -49,22 +49,19 @@ export const suggestThemeSettings = (colors: string[], isDark: boolean): ThemeSe
             }
         };
     } else {
-        // Light Mode Base: White (#FFFFFF)
-        const effectiveBg = getEffectiveColor('#FFFFFF', dominantColor, 90);
-        const whiteContrast = getContrastRatio(effectiveBg, '#FFFFFF');
-        const blackContrast = getContrastRatio(effectiveBg, '#000000');
+        // Light Mode: Enforce CLEAN look. No tints.
+        // The user specifically complained about "weird colors" in Light Mode.
+        // We return standard "Premium Light" colors: Grey Canvas, White Filter Pane.
 
         return {
             pageBackground: {
-                // Light mode: Very subtle tint of dominant color
-                color: dominantColor,
-                transparency: 96
+                color: '#F3F4F6', // Slate-100
+                transparency: 0   // Solid
             },
             filterPane: {
-                // Light mode filter pane: Tinted with dominant color
-                backgroundColor: dominantColor,
-                foreColor: blackContrast >= whiteContrast ? '#333333' : '#FFFFFF',
-                transparency: 90
+                backgroundColor: '#FFFFFF', // White
+                foreColor: '#000000',
+                transparency: 0   // Solid
             }
         };
     }

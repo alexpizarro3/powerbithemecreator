@@ -46,7 +46,7 @@ export const ThemePreview = ({
         container: isDarkMode ? 'bg-slate-900/40 border-white/10' : 'bg-white/80 border-slate-200',
         text: isDarkMode ? 'text-white/90' : 'text-slate-900',
         subText: isDarkMode ? 'text-slate-400' : 'text-slate-500',
-        card: isDarkMode ? 'bg-black/20 border-white/5' : 'bg-slate-50 border-slate-200',
+        card: isDarkMode ? 'bg-black/20 border-white/5' : 'bg-white border-slate-200 shadow-sm',
         cardBorder: isDarkMode ? 'border-white/5' : 'border-slate-200',
         hover: isDarkMode ? 'hover:bg-white/5' : 'hover:bg-slate-100',
     };

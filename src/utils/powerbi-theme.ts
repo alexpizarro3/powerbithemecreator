@@ -34,7 +34,6 @@ export interface PowerBITheme {
     textClasses?: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     visualStyles?: any;
-    isDarkMode?: boolean;
 }
 
 export const generateThemeJSON = (options: ThemeOptions): PowerBITheme => {
@@ -52,7 +51,7 @@ export const generateThemeJSON = (options: ThemeOptions): PowerBITheme => {
         filterPane
     } = options;
 
-    const background = isDarkMode ? "#1A1A1A" : "#FFFFFF";
+    const background = isDarkMode ? "#1A1A1A" : "#F3F4F6"; // Slate-100 for Light Mode Canvas
     const foreground = isDarkMode ? "#FFFFFF" : "#252423";
     const globalFont = typography?.global || fontFamily;
 
@@ -77,7 +76,7 @@ export const generateThemeJSON = (options: ThemeOptions): PowerBITheme => {
     } : undefined;
 
     return {
-        name: name,
+        name: name || "Custom Theme",
         dataColors: colors,
         bad: bad,
         neutral: neutral,
@@ -87,46 +86,125 @@ export const generateThemeJSON = (options: ThemeOptions): PowerBITheme => {
         tableAccent: colors[0],
         textClasses: textClasses,
         visualStyles: {
+            "page": {
+                "*": {
+                    "background": [{
+                        "color": { "solid": { "color": pageBackground?.color || background } },
+                        "transparency": pageBackground?.transparency || 0
+                    }],
+                    "outspace": [{
+                        "color": { "solid": { "color": pageBackground?.color || background } },
+                        "transparency": pageBackground?.transparency || 0
+                    }],
+                    "outspacePane": [{
+                        "backgroundColor": { "solid": { "color": filterPane?.backgroundColor || (isDarkMode ? "#252423" : "#FFFFFF") } },
+                        "foregroundColor": { "solid": { "color": filterPane?.foreColor || foreground } },
+                        "transparency": filterPane?.transparency || 0,
+                        "fontFamily": globalFont
+                    }]
+                }
+            },
+            "filterCard": {
+                "*": {
+                    "filterCard": [{
+                        "$id": "FilterCard",
+                        "backgroundColor": { "solid": { "color": filterPane?.backgroundColor || (isDarkMode ? "#252423" : "#FFFFFF") } },
+                        "foregroundColor": { "solid": { "color": filterPane?.foreColor || foreground } },
+                        "transparency": filterPane?.transparency || 0,
+                        "textSize": 10,
+                        "fontFamily": globalFont
+                    }]
+                }
+            },
+            "card": {
+                "*": {
+                    "labels": [{
+                        "color": { "solid": { "color": foreground } },
+                        "fontFamily": globalFont
+                    }],
+                    "categoryLabels": [{
+                        "color": { "solid": { "color": foreground } },
+                        "fontFamily": globalFont
+                    }]
+                }
+            },
+            "multiRowCard": {
+                "*": {
+                    "categoryLabels": [{
+                        "color": { "solid": { "color": foreground } },
+                        "fontFamily": globalFont
+                    }]
+                }
+            },
+            "slicer": {
+                "*": {
+                    "header": [{
+                        "fontColor": { "solid": { "color": foreground } },
+                        "fontFamily": globalFont,
+                        "textSize": 10
+                    }],
+                    "items": [{
+                        "fontColor": { "solid": { "color": foreground } },
+                        "fontFamily": globalFont,
+                        "textSize": 10,
+                        "background": { "solid": { "color": background } }
+                    }]
+                }
+            },
             "*": {
                 "*": {
-                    "*": [
-                        {
-                            fontSize: 10,
-                            fontFamily: globalFont,
-                            color: { solid: { color: foreground } },
-                            borderRadius: [{ px: borderRadius }]
-                        }
-                    ],
-                    "general": [
-                        {
-                            responsive: true,
-                            background: { show: false }
-                        }
-                    ],
-                    "page": [
-                        {
-                            background: {
-                                solid: {
-                                    color: pageBackground?.color || background
-                                },
-                                transparency: pageBackground?.transparency || 0
-                            }
-                        }
-                    ],
-                    "filterCard": [
-                        {
-                            "$id": "FilterCard",
-                            "backgroundColor": { "solid": { "color": filterPane?.backgroundColor || (isDarkMode ? "#252423" : "#FFFFFF") } },
-                            "foregroundColor": { "solid": { "color": filterPane?.foreColor || foreground } },
-                            "transparency": filterPane?.transparency || 0,
-                            "textSize": 10,
-                            "fontFamily": globalFont
-                        }
-                    ]
+                    "*": [{
+                        "fontSize": 10,
+                        "fontFamily": globalFont,
+                        "color": { "solid": { "color": foreground } }
+                    }],
+                    "general": [{
+                        "responsive": true
+                    }],
+                    "background": [{
+                        "show": true,
+                        // Light Mode: Pure White Cards to pop against the Grey Canvas
+                        "color": { "solid": { "color": isDarkMode ? "#000000" : "#FFFFFF" } },
+                        "transparency": isDarkMode ? 80 : 0
+                    }],
+                    "dropShadow": [{
+                        "show": !isDarkMode,
+                        "color": { "solid": { "color": "#000000" } },
+                        "position": "Outer",
+                        "transparency": 90,
+                        "blur": 10,
+                        "angle": 90,
+                        "distance": 2
+                    }],
+                    "border": [{
+                        "show": borderRadius > 0,
+                        "radius": borderRadius,
+                        // Very subtle border in PBI (cannot handle alpha well, so approximate)
+                        "color": { "solid": { "color": isDarkMode ? "#475569" : "#E2E8F0" } }
+                    }],
+                    "title": [{
+                        "fontColor": { "solid": { "color": foreground } },
+                        "fontFamily": globalFont,
+                        "fontSize": 12
+                    }],
+                    "categoryAxis": [{
+                        "labelColor": { "solid": { "color": foreground } },
+                        "titleColor": { "solid": { "color": foreground } },
+                        "fontFamily": globalFont
+                    }],
+                    "valueAxis": [{
+                        "labelColor": { "solid": { "color": foreground } },
+                        "titleColor": { "solid": { "color": foreground } },
+                        "fontFamily": globalFont
+                    }],
+                    "legend": [{
+                        "labelColor": { "solid": { "color": foreground } },
+                        "titleColor": { "solid": { "color": foreground } },
+                        "fontFamily": globalFont
+                    }]
                 }
             }
-        },
-        isDarkMode: isDarkMode
+        }
     };
 };
 
