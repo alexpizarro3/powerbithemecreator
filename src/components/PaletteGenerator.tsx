@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { RefreshCw, Lock, Unlock, GripVertical, ChevronDown, LayoutTemplate, AlertTriangle, Image as ImageIcon, Undo, Redo, Sliders, HelpCircle, Keyboard, Briefcase } from 'lucide-react';
+import { RefreshCw, Lock, Unlock, GripVertical, ChevronDown, LayoutTemplate, AlertTriangle, Undo, Redo, Sliders, HelpCircle, Keyboard, Briefcase } from 'lucide-react';
 import { ImageToPalette } from './ImageToPalette';
 import { AdvancedColorPicker } from './AdvancedColorPicker';
 import {
