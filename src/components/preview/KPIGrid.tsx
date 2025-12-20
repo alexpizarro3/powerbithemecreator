@@ -24,7 +24,9 @@ export const KPIGrid = ({ theme, palette, borderRadius, getTextStyle }: KPIGridP
                     style={{ borderRadius: `${borderRadius}px` }}
                 >
                     <div className="absolute top-0 left-0 w-1 h-full" style={{ backgroundColor: palette[i % palette.length] }} />
-                    <p className="text-xs uppercase tracking-wider font-medium mb-1" style={getTextStyle('label')}>{kpi.label}</p>
+                    <div className={`${theme.pill} rounded-md px-2 py-1 mb-2 inline-block`}>
+                        <p className="text-xs uppercase tracking-wider font-medium" style={getTextStyle('label')}>{kpi.label}</p>
+                    </div>
                     <div className="flex items-baseline gap-2">
                         <h3 className="font-bold" style={getTextStyle('callout')}>{kpi.value}</h3>
                         <span className={`text-xs font-medium flex items-center ${kpi.up ? 'text-green-500' : 'text-red-500'}`}>

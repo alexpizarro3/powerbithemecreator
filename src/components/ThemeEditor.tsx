@@ -13,8 +13,8 @@ interface ThemeEditorProps {
     setColors: (colors: ColorItem[]) => void;
     themeName: string;
     setThemeName: (name: string) => void;
-    isDarkMode: boolean;
-    setIsDarkMode: (isDark: boolean) => void;
+    themeMode: 'light' | 'dark' | 'soft';
+    setThemeMode: (mode: 'light' | 'dark' | 'soft') => void;
     borderRadius: number;
     setBorderRadius: (radius: number) => void;
     typography: TypographyState;
@@ -32,8 +32,8 @@ export const ThemeEditor = ({
     setColors,
     themeName,
     setThemeName,
-    isDarkMode,
-    setIsDarkMode,
+    themeMode,
+    setThemeMode,
     borderRadius,
     setBorderRadius,
     typography,
@@ -56,7 +56,7 @@ export const ThemeEditor = ({
             colors: palette,
             borderRadius,
             typography,
-            isDarkMode,
+            isDarkMode: themeMode !== 'light',
             pageBackground,
             filterPane,
             ...dataGradients
@@ -73,13 +73,14 @@ export const ThemeEditor = ({
             colors: palette,
             borderRadius,
             typography,
-            isDarkMode,
+            isDarkMode: themeMode !== 'light',
             pageBackground,
             filterPane,
             ...dataGradients
         });
         downloadTheme(theme);
     };
+
 
     const handleImport = (theme: ThemeOptions) => {
         setThemeName(theme.name);
@@ -96,7 +97,7 @@ export const ThemeEditor = ({
             });
         }
 
-        if (theme.isDarkMode !== undefined) setIsDarkMode(theme.isDarkMode);
+        if (theme.isDarkMode !== undefined) setThemeMode(theme.isDarkMode ? 'dark' : 'light');
         if (theme.pageBackground) setPageBackground(theme.pageBackground);
         if (theme.filterPane) setFilterPane(theme.filterPane);
 
@@ -156,6 +157,26 @@ export const ThemeEditor = ({
                                 className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
                                 placeholder="Enter theme name..."
                             />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-400 mb-2 ml-1">
+                                Theme Mode
+                            </label>
+                            <div className="grid grid-cols-3 gap-2 bg-black/20 p-1 rounded-xl">
+                                {(['light', 'soft', 'dark'] as const).map((mode) => (
+                                    <button
+                                        key={mode}
+                                        onClick={() => setThemeMode(mode)}
+                                        className={`py-2 rounded-lg text-sm font-medium transition-colors capitalize ${themeMode === mode
+                                            ? 'bg-blue-600 text-white shadow-lg'
+                                            : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                            }`}
+                                    >
+                                        {mode}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
 
                         <div>
@@ -238,7 +259,7 @@ export const ThemeEditor = ({
                                 colors: colors.map(c => c.hex),
                                 borderRadius,
                                 typography,
-                                isDarkMode,
+                                isDarkMode: themeMode !== 'light',
                                 pageBackground,
                                 filterPane,
                                 ...dataGradients

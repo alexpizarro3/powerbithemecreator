@@ -19,8 +19,8 @@ function App() {
     redo,
     handlePaletteGenerated,
     handlePaletteSelect,
-    isDarkMode,
-    setIsDarkMode,
+    themeMode,
+    setThemeMode,
     borderRadius,
     setBorderRadius,
     typography,
@@ -49,7 +49,7 @@ function App() {
       });
     }
 
-    if (theme.isDarkMode !== undefined) setIsDarkMode(theme.isDarkMode);
+    if (theme.isDarkMode !== undefined) setThemeMode(theme.isDarkMode ? 'dark' : 'light');
     if (theme.pageBackground) setPageBackground(theme.pageBackground);
     if (theme.filterPane) setFilterPane(theme.filterPane);
 
@@ -86,7 +86,7 @@ function App() {
         <ThemeActions
           colors={colors}
           themeName={themeName}
-          isDarkMode={isDarkMode}
+          isDarkMode={themeMode !== 'light'}
           borderRadius={borderRadius}
           typography={typography}
           pageBackground={pageBackground}
@@ -113,8 +113,8 @@ function App() {
             setColors={setColors}
             themeName={themeName}
             setThemeName={setThemeName}
-            isDarkMode={isDarkMode}
-            setIsDarkMode={setIsDarkMode}
+            themeMode={themeMode}
+            setThemeMode={setThemeMode}
             borderRadius={borderRadius}
             setBorderRadius={setBorderRadius}
             typography={typography}
@@ -130,8 +130,8 @@ function App() {
         <div className="lg:col-span-8 space-y-8">
           <ThemePreview
             colors={colors}
-            isDarkMode={isDarkMode}
-            setIsDarkMode={setIsDarkMode}
+            themeMode={themeMode}
+            setThemeMode={setThemeMode}
             borderRadius={borderRadius}
             typography={typography}
             pageBackground={pageBackground}

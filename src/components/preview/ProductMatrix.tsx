@@ -1,5 +1,6 @@
 import { LayoutGrid } from 'lucide-react';
 import type { PreviewTheme, GetTextStyle } from './types';
+import { getOptimalTextColor } from '../../utils/colors';
 
 interface ProductMatrixProps {
     theme: PreviewTheme;
@@ -10,17 +11,24 @@ interface ProductMatrixProps {
 }
 
 export const ProductMatrix = ({ theme, palette, borderRadius, getTextStyle, dataGradients }: ProductMatrixProps) => {
+    const headerTextColor = getOptimalTextColor(palette[0]);
     return (
         <div
             className={`${theme.card} p-6 border transition-colors duration-300`}
             style={{ borderRadius: `${borderRadius}px` }}
         >
-            <div className={`flex items-center gap-2 mb-6 ${theme.subText}`}>
+            <div className={`flex items-center gap-2 mb-6 ${theme.subText} ${theme.pill} rounded-lg p-2 inline-flex`}>
                 <LayoutGrid size={18} />
                 <span className="text-sm font-medium uppercase tracking-wider" style={getTextStyle('title')}>Product Matrix</span>
             </div>
             <div className={`w-full overflow-hidden rounded-lg border ${theme.cardBorder} text-sm`}>
-                <div className="grid grid-cols-3 p-3 font-semibold text-white" style={{ backgroundColor: palette[0] }}>
+                <div
+                    className="grid grid-cols-3 p-3 font-semibold shadow-sm transition-colors duration-300"
+                    style={{
+                        backgroundColor: palette[0],
+                        color: headerTextColor
+                    }}
+                >
                     <div style={getTextStyle('header')}>Category</div>
                     <div className="text-right" style={getTextStyle('header')}>Units</div>
                     <div className="text-right" style={getTextStyle('header')}>Margin</div>

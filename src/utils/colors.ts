@@ -85,6 +85,13 @@ export const getContrastRatio = (hex1: string, hex2: string): number => {
     return (lighter + 0.05) / (darker + 0.05);
 };
 
+export const getOptimalTextColor = (hexColor: string): string => {
+    const rgb = hexToRgb(hexColor);
+    if (!rgb) return '#ffffff';
+    const luminance = getLuminance(rgb.r, rgb.g, rgb.b);
+    return luminance > 0.5 ? '#000000' : '#ffffff';
+};
+
 export const generateRandomColor = (): string => {
     const letters = '0123456789ABCDEF';
     let color = '#';

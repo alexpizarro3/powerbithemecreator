@@ -15,7 +15,7 @@ export const DistributionChart = ({ theme, palette, borderRadius, getTextStyle, 
             className={`${theme.card} p-6 border transition-colors duration-300 flex flex-col items-center justify-center`}
             style={{ borderRadius: `${borderRadius}px` }}
         >
-            <div className={`flex items-center gap-2 mb-6 ${theme.subText} w-full`}>
+            <div className={`flex items-center gap-2 mb-6 ${theme.subText} ${theme.pill} rounded-lg p-2 w-auto inline-flex`}>
                 <PieChart size={18} />
                 <span className="text-sm font-medium uppercase tracking-wider" style={getTextStyle('title')}>Distribution</span>
             </div>
@@ -31,7 +31,7 @@ export const DistributionChart = ({ theme, palette, borderRadius, getTextStyle, 
             />
             <div className="flex gap-4 mt-6 justify-center flex-wrap">
                 {['A', 'B', 'C', 'D'].map((label, i) => (
-                    <div key={i} className="flex items-center gap-2">
+                    <div key={i} className={`flex items-center gap-2 ${theme.pill} rounded px-2 py-1`}>
                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: palette[i % 4] }} />
                         <span className={`text-xs ${theme.subText}`} style={getTextStyle('label')}>{label}</span>
                     </div>

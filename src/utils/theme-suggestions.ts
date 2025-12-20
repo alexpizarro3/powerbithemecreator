@@ -12,7 +12,9 @@ interface ThemeSettings {
     };
 }
 
-export const suggestThemeSettings = (colors: string[], isDark: boolean): ThemeSettings => {
+export type ThemeMode = 'light' | 'dark' | 'soft';
+
+export const suggestThemeSettings = (colors: string[], mode: ThemeMode): ThemeSettings => {
     const dominantColor = colors[0];
 
     // Helper to calculate effective background color based on transparency
@@ -29,9 +31,31 @@ export const suggestThemeSettings = (colors: string[], isDark: boolean): ThemeSe
         return rgbToHex(r, g, b);
     };
 
-    if (isDark) {
-        // Dark Mode Base: Slate-900 (#0f172a)
-        const effectiveBg = getEffectiveColor('#0f172a', dominantColor, 80);
+    if (mode === 'soft') {
+        // Dynamic Soft Mode: Use dominant color but with high transparency over dark base
+        const baseBg = '#1A1A1A';
+        const effectiveBg = getEffectiveColor(baseBg, dominantColor, 80); // Calculate for filter pane
+        const whiteContrast = getContrastRatio(effectiveBg, '#FFFFFF');
+        const blackContrast = getContrastRatio(effectiveBg, '#000000');
+
+        return {
+            pageBackground: {
+                color: dominantColor,
+                transparency: 92 // High transparency to blend with #1A1A1A
+            },
+            filterPane: {
+                backgroundColor: dominantColor,
+                foreColor: whiteContrast >= blackContrast ? '#FFFFFF' : '#000000',
+                transparency: 80
+            }
+        };
+    }
+
+    if (mode === 'dark') {
+        const baseBg = '#0f172a'; // Slate-900
+
+        // Dark Mode Base
+        const effectiveBg = getEffectiveColor(baseBg, dominantColor, 80);
         const whiteContrast = getContrastRatio(effectiveBg, '#FFFFFF');
         const blackContrast = getContrastRatio(effectiveBg, '#000000');
 

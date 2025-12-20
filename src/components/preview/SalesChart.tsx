@@ -14,7 +14,7 @@ export const SalesChart = ({ theme, palette, borderRadius, getTextStyle }: Sales
             className={`md:col-span-2 ${theme.card} p-6 border transition-colors duration-300`}
             style={{ borderRadius: `${borderRadius}px` }}
         >
-            <div className={`flex items-center gap-2 mb-6 ${theme.subText}`}>
+            <div className={`flex items-center gap-2 mb-6 ${theme.subText} ${theme.pill} rounded-lg p-2 inline-flex`}>
                 <BarChart3 size={18} />
                 <span className="text-sm font-medium uppercase tracking-wider" style={getTextStyle('title')}>Sales by Region</span>
             </div>

@@ -5,6 +5,8 @@ export interface PreviewTheme {
     card: string;
     cardBorder: string;
     hover: string;
+    pill: string;
+    secondary: string;
 }
 
 export type GetTextStyle = (type: 'title' | 'callout' | 'label' | 'header') => React.CSSProperties;

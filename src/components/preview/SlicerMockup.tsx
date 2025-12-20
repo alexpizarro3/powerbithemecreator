@@ -1,5 +1,6 @@
 import { Filter } from 'lucide-react';
 import type { PreviewTheme, GetTextStyle } from './types';
+import { getOptimalTextColor } from '../../utils/colors';
 
 interface FilterPaneMockupProps {
     theme: PreviewTheme;
@@ -22,8 +23,11 @@ export const SlicerMockup = ({ theme, palette, borderRadius, getTextStyle }: Fil
                 {['2024', '2023', '2022', '2021'].map((year, i) => (
                     <div
                         key={year}
-                        className={`p-2 rounded-lg text-sm font-medium cursor-pointer transition-all ${i === 0 ? 'text-white shadow-lg' : `${theme.subText} ${theme.hover}`}`}
-                        style={i === 0 ? { backgroundColor: palette[0] } : {}}
+                        className={`p-2 rounded-lg text-sm font-medium cursor-pointer transition-all ${i === 0 ? 'shadow-lg' : `${theme.secondary} hover:bg-slate-200/80 ${theme.subText}`}`}
+                        style={i === 0 ? {
+                            backgroundColor: palette[0],
+                            color: getOptimalTextColor(palette[0])
+                        } : {}}
                     >
                         {year}
                     </div>
