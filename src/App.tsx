@@ -5,6 +5,9 @@ import { TrendingPalettes } from './components/TrendingPalettes';
 import { Footer } from './components/Footer';
 import { ThemeActions } from './components/ThemeActions';
 import { useThemeState } from './hooks/useThemeState';
+import { useState } from 'react';
+import { Heart } from 'lucide-react';
+import { DonationModal } from './components/DonationModal';
 import type { ThemeOptions } from './utils/powerbi-theme';
 
 function App() {
@@ -33,6 +36,8 @@ function App() {
     setDataGradients,
     reset
   } = useThemeState();
+
+  const [isDonationOpen, setIsDonationOpen] = useState(false);
 
   const handleImport = (theme: ThemeOptions) => {
     setThemeName(theme.name);
@@ -83,6 +88,16 @@ function App() {
           </p>
         </div>
 
+
+
+        <button
+          onClick={() => setIsDonationOpen(true)}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition-all group bg-rose-500 hover:bg-rose-600 text-white shadow-lg hover:shadow-rose-500/25 border border-rose-400"
+        >
+          <Heart size={20} className="fill-white/20 group-hover:scale-110 transition-transform" />
+          <span>Donate</span>
+        </button>
+
         <ThemeActions
           colors={colors}
           themeName={themeName}
@@ -95,7 +110,7 @@ function App() {
           onImport={handleImport}
           onReset={reset}
         />
-      </header>
+      </header >
 
       <main className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-4 space-y-8">
@@ -144,7 +159,15 @@ function App() {
       <TrendingPalettes onSelect={handlePaletteSelect} />
 
       <Footer />
-    </div>
+      <Footer />
+
+      <DonationModal
+        isOpen={isDonationOpen}
+        onClose={() => setIsDonationOpen(false)}
+        btcAddress="15ZsFSnF3q3MvRwh4QkLSSJxNMsiLTD33w"
+        buyMeCoffeeUrl="https://www.buymeacoffee.com/alexpizarro3"
+      />
+    </div >
   );
 }
 

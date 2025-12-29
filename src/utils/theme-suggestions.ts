@@ -73,18 +73,27 @@ export const suggestThemeSettings = (colors: string[], mode: ThemeMode): ThemeSe
             }
         };
     } else {
-        // Light Mode: Enforce CLEAN look. No tints.
-        // The user specifically complained about "weird colors" in Light Mode.
-        // We return standard "Premium Light" colors: Grey Canvas, White Filter Pane.
+        // Light Mode: Dynamic Light
+        // Previous static approach: '#F3F4F6'
+        // New approach: Subtle tint of dominant color 
+
+        // 97% brightness / very subtle tint for page background
+        const effectivePageBg = getEffectiveColor('#FFFFFF', dominantColor, 96);
+
+        // Filter pane slightly darker/more tinted than page for separation
+        const effectiveFilterBg = getEffectiveColor('#FFFFFF', dominantColor, 92);
+
+        const whiteContrast = getContrastRatio(effectiveFilterBg, '#FFFFFF');
+        const blackContrast = getContrastRatio(effectiveFilterBg, '#000000');
 
         return {
             pageBackground: {
-                color: '#F3F4F6', // Slate-100
-                transparency: 0   // Solid
+                color: effectivePageBg,
+                transparency: 0   // Solid, but tinted
             },
             filterPane: {
-                backgroundColor: '#FFFFFF', // White
-                foreColor: '#000000',
+                backgroundColor: effectiveFilterBg,
+                foreColor: whiteContrast >= blackContrast ? '#FFFFFF' : '#000000',
                 transparency: 0   // Solid
             }
         };

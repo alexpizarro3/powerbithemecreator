@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Sun, Moon, Eye, Cloud } from 'lucide-react'; // Added Cloud for Soft mode icon if valid, or just logic
+import { Sun, Moon, Eye, Cloud } from 'lucide-react';
+
 import { KPIGrid } from './preview/KPIGrid';
 import { SlicerMockup } from './preview/SlicerMockup';
 import { SalesChart } from './preview/SalesChart';
@@ -46,17 +47,20 @@ export const ThemePreview = ({
     const [visionMode, setVisionMode] = useState<VisionSimulationMode>('normal');
     const palette = colors.map(c => c.hex);
 
-    const primaryColor = colors[0]?.hex || '#3b82f6';
-    const secondaryColor = colors[1]?.hex || primaryColor;
-    const accentColor = colors[2]?.hex || secondaryColor;
+
+
+
 
     // Dynamic Background for Light Mode
-    const lightModeGradient = `
-        radial-gradient(circle at 0% 0%, ${hexToRgba(primaryColor, 85)} 0%, transparent 50%),
-        radial-gradient(circle at 100% 0%, ${hexToRgba(secondaryColor, 88)} 0%, transparent 50%),
-        radial-gradient(circle at 100% 100%, ${hexToRgba(accentColor, 90)} 0%, transparent 50%),
-        linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)
-    `;
+    // We now use the passed pageBackground color (which is tinted) instead of a hardcoded gradient.
+    // However, to keep it "premium", we can add a very subtle enhancement gradient on top.
+    const containerStyle = {
+        borderRadius: `${borderRadius + 8}px`,
+        fontFamily: typography.global,
+        // If light, use the calculated tinted color. If dark/soft, use class-based or undefined (handled by inner divs usually, but here we set main container)
+        backgroundColor: themeMode === 'light' ? pageBackground.color : undefined,
+        borderColor: themeMode === 'light' ? 'rgba(0,0,0,0.05)' : 'rgba(255, 255, 255, 0.1)'
+    };
 
     // Determine background based on mode
     const getContainerBg = () => {
@@ -78,8 +82,9 @@ export const ThemePreview = ({
         subText: isLight ? 'text-slate-600' : 'text-slate-400',
 
         // Card Styles
+        // Card Styles
         card: isLight
-            ? 'bg-white/90 border-slate-200/60 shadow-lg backdrop-blur-xl'
+            ? 'bg-white/40 border-white/40 shadow-sm backdrop-blur-md hover:bg-white/50 transition-colors' // More transparent (40%) and interactive
             : themeMode === 'soft'
                 ? 'bg-black/20 border-white/5 shadow-none' // User JSON (20% transparency on black)
                 : 'bg-black/20 border-white/5', // Dark
@@ -107,12 +112,7 @@ export const ThemePreview = ({
     return (
         <div
             className={`${theme.container} backdrop-blur-xl border p-6 shadow-2xl h-full overflow-y-auto custom-scrollbar transition-all duration-500 flex flex-col`}
-            style={{
-                borderRadius: `${borderRadius + 8}px`,
-                fontFamily: typography.global,
-                background: isLight ? lightModeGradient : undefined,
-                borderColor: isLight ? 'rgba(226, 232, 240, 0.5)' : 'rgba(255, 255, 255, 0.1)'
-            }}
+            style={containerStyle}
         >
             {/* SVG Filters for Color Blindness Simulation */}
             <svg className="hidden">
@@ -153,6 +153,8 @@ export const ThemePreview = ({
                             ))}
                         </div>
                     </div>
+
+
 
                     {/* Theme Toggle (Segmented Control Style) */}
                     <div className={`flex rounded-lg p-1 border backdrop-blur-md transition-colors ${isLight
@@ -272,6 +274,7 @@ export const ThemePreview = ({
                     isDarkMode={isDarkBool}
                 />
             </div>
-        </div>
+
+        </div >
     );
 };
