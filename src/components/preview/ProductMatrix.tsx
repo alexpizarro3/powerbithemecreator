@@ -23,7 +23,7 @@ export const ProductMatrix = ({ theme, palette, borderRadius, getTextStyle, data
             </div>
             <div className={`w-full overflow-hidden rounded-lg border ${theme.cardBorder} text-sm`}>
                 <div
-                    className="grid grid-cols-3 p-3 font-semibold shadow-sm transition-colors duration-300"
+                    className="grid grid-cols-[2fr_1fr_1fr] p-3 font-semibold shadow-sm transition-colors duration-300"
                     style={{
                         backgroundColor: palette[0],
                         color: headerTextColor
@@ -38,7 +38,7 @@ export const ProductMatrix = ({ theme, palette, borderRadius, getTextStyle, data
                     { cat: 'Clothing', units: 320, margin: '40%', score: 'good' },
                     { cat: 'Home', units: 180, margin: '35%', score: 'neutral' },
                 ].map((row, i) => (
-                    <div key={i} className={`grid grid-cols-3 p-3 border-b ${theme.cardBorder} ${theme.subText} ${theme.hover}`}>
+                    <div key={i} className={`grid grid-cols-[2fr_1fr_1fr] p-3 border-b ${theme.cardBorder} ${theme.subText} ${theme.hover}`}>
                         <div className={`font-medium pl-2 border-l-2 ${theme.text}`} style={{ borderColor: palette[i % palette.length] }}>{row.cat}</div>
                         <div className="text-right">{row.units}</div>
                         <div className="text-right font-medium" style={{

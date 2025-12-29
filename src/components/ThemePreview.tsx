@@ -221,24 +221,17 @@ export const ThemePreview = ({
                             <p className={`text-sm ${theme.subText}`}>Last updated: Today</p>
                         </div>
 
-                        {/* KPI Cards */}
-                        <KPIGrid
-                            theme={theme}
-                            palette={palette}
-                            borderRadius={borderRadius}
-                            getTextStyle={getTextStyle}
-                        />
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {/* Slicer Mockup */}
+                        {/* Top Row: KPIs (3/4) + Slicer (1/4) */}
+                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                            <div className="lg:col-span-3">
+                                <KPIGrid
+                                    theme={theme}
+                                    palette={palette}
+                                    borderRadius={borderRadius}
+                                    getTextStyle={getTextStyle}
+                                />
+                            </div>
                             <SlicerMockup
-                                theme={theme}
-                                palette={palette}
-                                borderRadius={borderRadius}
-                                getTextStyle={getTextStyle}
-                            />
-                            {/* Bar Chart Mockup */}
-                            <SalesChart
                                 theme={theme}
                                 palette={palette}
                                 borderRadius={borderRadius}
@@ -246,8 +239,8 @@ export const ThemePreview = ({
                             />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Matrix Mockup */}
+                        {/* Bottom Row: Matrix + Sales + Distribution */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
                             <ProductMatrix
                                 theme={theme}
                                 palette={palette}
@@ -255,7 +248,12 @@ export const ThemePreview = ({
                                 getTextStyle={getTextStyle}
                                 dataGradients={dataGradients}
                             />
-                            {/* Pie Chart Mockup */}
+                            <SalesChart
+                                theme={theme}
+                                palette={palette}
+                                borderRadius={borderRadius}
+                                getTextStyle={getTextStyle}
+                            />
                             <DistributionChart
                                 theme={theme}
                                 palette={palette}
