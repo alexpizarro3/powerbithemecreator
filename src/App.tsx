@@ -77,7 +77,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen text-white p-8 font-sans pb-32">
+    <div className="min-h-screen text-white p-4 md:p-8 font-sans pb-32">
       <header className="mb-12 flex flex-col md:flex-row justify-between items-center gap-6 max-w-[1600px] mx-auto">
         <div className="text-center md:text-left">
           <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent drop-shadow-sm">

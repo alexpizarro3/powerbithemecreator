@@ -111,7 +111,7 @@ export const ThemePreview = ({
 
     return (
         <div
-            className={`${theme.container} backdrop-blur-xl border p-6 shadow-2xl h-full overflow-y-auto custom-scrollbar transition-all duration-500 flex flex-col`}
+            className={`${theme.container} backdrop-blur-xl border p-6 shadow-2xl h-full min-h-[800px] flex flex-col`}
             style={containerStyle}
         >
             {/* SVG Filters for Color Blindness Simulation */}
@@ -126,7 +126,7 @@ export const ThemePreview = ({
                         </filter>
                     ))}
                 </defs>
-            </svg>
+            </svg >
 
             <div className="flex justify-between items-center mb-6 shrink-0">
                 <h2 className={`text-xl font-semibold ${theme.text}`}>Theme Preview</h2>
@@ -205,7 +205,7 @@ export const ThemePreview = ({
             </div>
 
             <div
-                className="flex border border-white/10 rounded-xl overflow-hidden h-[800px] transition-all duration-300"
+                className="flex flex-col lg:flex-row border border-white/10 rounded-xl overflow-hidden min-h-[800px] transition-all duration-300"
                 style={{ filter: visionMode !== 'normal' ? `url(#filter-${visionMode})` : 'none' }}
             >
                 {/* Report Page */}

@@ -9,7 +9,7 @@ interface FilterPaneSidebarProps {
 export const FilterPaneSidebar = ({ filterPane, hexToRgba, isDarkMode }: FilterPaneSidebarProps) => {
     return (
         <div
-            className="w-64 border-l border-white/10 p-4 flex flex-col gap-4 transition-colors duration-300 shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.1)] z-10"
+            className="w-full lg:w-64 border-t lg:border-t-0 lg:border-l border-white/10 p-4 flex flex-col gap-4 transition-colors duration-300 shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.1)] z-10"
             style={{
                 backgroundColor: hexToRgba(filterPane.backgroundColor, filterPane.transparency),
                 color: filterPane.foreColor
