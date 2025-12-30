@@ -6,15 +6,32 @@ interface SalesChartProps {
     palette: string[];
     borderRadius: number;
     getTextStyle: GetTextStyle;
+    visualHeader?: { backgroundColor: string; fontColor: string; transparency: number };
 }
 
-export const SalesChart = ({ theme, palette, borderRadius, getTextStyle }: SalesChartProps) => {
+export const SalesChart = ({ theme, palette, borderRadius, getTextStyle, visualHeader }: SalesChartProps) => {
     return (
         <div
-            className={`w-full ${theme.card} p-6 border transition-colors duration-300`}
+            className={`w-full ${theme.card} p-6 border transition-colors duration-300 relative overflow-hidden`}
             style={{ borderRadius: `${borderRadius}px` }}
         >
-            <div className={`flex items-center gap-2 mb-6 ${theme.subText} ${theme.pill} rounded-lg p-2 inline-flex`}>
+            {/* Visual Header Simulation */}
+            <div className="absolute top-0 left-0 right-0 h-8 flex items-center px-4 justify-end gap-2"
+                style={visualHeader && visualHeader.transparency < 100 ? {
+                    backgroundColor: visualHeader.backgroundColor,
+                    opacity: 1 - (visualHeader.transparency / 100)
+                } : { display: 'none' }}
+            >
+                {visualHeader && visualHeader.transparency < 100 && (
+                    <div className="flex gap-1 opacity-50">
+                        <div className="w-1 h-1 rounded-full" style={{ backgroundColor: visualHeader.fontColor }}></div>
+                        <div className="w-1 h-1 rounded-full" style={{ backgroundColor: visualHeader.fontColor }}></div>
+                        <div className="w-1 h-1 rounded-full" style={{ backgroundColor: visualHeader.fontColor }}></div>
+                    </div>
+                )}
+            </div>
+
+            <div className={`flex items-center gap-2 mb-6 ${theme.subText} ${theme.pill} rounded-lg p-2 inline-flex mt-4`}>
                 <BarChart3 size={18} />
                 <span className="text-sm font-medium uppercase tracking-wider" style={getTextStyle('title')}>Sales by Region</span>
             </div>

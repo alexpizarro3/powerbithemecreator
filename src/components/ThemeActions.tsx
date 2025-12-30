@@ -3,6 +3,7 @@ import { Download, Upload, Copy, Check, RotateCcw } from 'lucide-react';
 import { downloadTheme, generateThemeJSON, parseThemeJSON, type ThemeOptions } from '../utils/powerbi-theme';
 import type { ColorItem } from './PaletteGenerator';
 import type { TypographyState } from './TypographySettings';
+import type { VisualContainerState } from './VisualContainerSettings';
 
 interface ThemeActionsProps {
     colors: ColorItem[];
@@ -13,6 +14,7 @@ interface ThemeActionsProps {
     pageBackground: { color: string; transparency: number };
     filterPane: { backgroundColor: string; foreColor: string; transparency: number };
     dataGradients: { bad: string; neutral: string; good: string };
+    visualContainer: VisualContainerState;
     onImport: (theme: ThemeOptions) => void;
     onReset: () => void;
 }
@@ -26,6 +28,7 @@ export const ThemeActions = ({
     pageBackground,
     filterPane,
     dataGradients,
+    visualContainer,
     onImport,
     onReset
 }: ThemeActionsProps) => {
@@ -42,7 +45,8 @@ export const ThemeActions = ({
             isDarkMode,
             pageBackground,
             filterPane,
-            ...dataGradients
+            ...dataGradients,
+            visualContainer
         });
         downloadTheme(theme);
     };
@@ -57,7 +61,8 @@ export const ThemeActions = ({
             isDarkMode,
             pageBackground,
             filterPane,
-            ...dataGradients
+            ...dataGradients,
+            visualContainer
         });
 
         try {

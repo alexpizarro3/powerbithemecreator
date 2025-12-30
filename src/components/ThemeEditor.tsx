@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Download, Settings, Type, Square, Copy, Check, TrendingUp } from 'lucide-react';
+import { Download, Settings, Type, Square, Copy, Check, TrendingUp, Box } from 'lucide-react';
 import type { ColorItem } from './PaletteGenerator';
 import { generateThemeJSON, downloadTheme, type ThemeOptions } from '../utils/powerbi-theme';
 import { ThemeImporter } from './ThemeImporter';
@@ -7,6 +7,7 @@ import { PageBackgroundSettings } from './PageBackgroundSettings';
 import { FilterPaneSettings } from './FilterPaneSettings';
 import { TypographySettings, type TypographyState } from './TypographySettings';
 import { DataGradients } from './DataGradients';
+import { VisualContainerSettings, type VisualContainerState } from './VisualContainerSettings';
 
 interface ThemeEditorProps {
     colors: ColorItem[];
@@ -25,6 +26,8 @@ interface ThemeEditorProps {
     setFilterPane: (settings: { backgroundColor: string; foreColor: string; transparency: number }) => void;
     dataGradients: { bad: string; neutral: string; good: string };
     setDataGradients: (gradients: { bad: string; neutral: string; good: string }) => void;
+    visualContainer: VisualContainerState;
+    setVisualContainer: (settings: VisualContainerState) => void;
 }
 
 export const ThemeEditor = ({
@@ -43,10 +46,12 @@ export const ThemeEditor = ({
     filterPane,
     setFilterPane,
     dataGradients,
-    setDataGradients
+    setDataGradients,
+    visualContainer,
+    setVisualContainer
 }: ThemeEditorProps) => {
     // themeName state removed
-    const [activeTab, setActiveTab] = useState<'general' | 'typography' | 'pages' | 'filter' | 'gradients' | 'json'>('general');
+    const [activeTab, setActiveTab] = useState<'general' | 'typography' | 'visuals' | 'pages' | 'filter' | 'gradients' | 'json'>('general');
     const [copied, setCopied] = useState(false);
 
     const handleCopy = () => {
@@ -59,7 +64,8 @@ export const ThemeEditor = ({
             isDarkMode: themeMode !== 'light',
             pageBackground,
             filterPane,
-            ...dataGradients
+            ...dataGradients,
+            visualContainer
         });
         navigator.clipboard.writeText(JSON.stringify(theme, null, 2));
         setCopied(true);
@@ -76,7 +82,8 @@ export const ThemeEditor = ({
             isDarkMode: themeMode !== 'light',
             pageBackground,
             filterPane,
-            ...dataGradients
+            ...dataGradients,
+            visualContainer
         });
         downloadTheme(theme);
     };
@@ -127,7 +134,7 @@ export const ThemeEditor = ({
             </div>
 
             <div className="flex gap-2 mb-6 bg-black/20 p-1 rounded-xl overflow-x-auto custom-scrollbar">
-                {(['general', 'typography', 'pages', 'filter', 'gradients', 'json'] as const).map((tab) => (
+                {(['general', 'typography', 'visuals', 'pages', 'filter', 'gradients', 'json'] as const).map((tab) => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
@@ -137,6 +144,7 @@ export const ThemeEditor = ({
                             }`}
                     >
                         {tab === 'typography' && <Type size={14} />}
+                        {tab === 'visuals' && <Box size={14} />}
                         {tab === 'gradients' && <TrendingUp size={14} />}
                         {tab}
                     </button>
@@ -209,6 +217,15 @@ export const ThemeEditor = ({
                     </div>
                 )}
 
+                {activeTab === 'visuals' && (
+                    <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        <VisualContainerSettings
+                            visualContainer={visualContainer}
+                            onChange={setVisualContainer}
+                        />
+                    </div>
+                )}
+
                 {activeTab === 'pages' && (
                     <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                         <PageBackgroundSettings
@@ -262,7 +279,8 @@ export const ThemeEditor = ({
                                 isDarkMode: themeMode !== 'light',
                                 pageBackground,
                                 filterPane,
-                                ...dataGradients
+                                ...dataGradients,
+                                visualContainer
                             }), null, 2)}
                         </pre>
                     </div>

@@ -34,6 +34,8 @@ function App() {
     setFilterPane,
     dataGradients,
     setDataGradients,
+    visualContainer,
+    setVisualContainer,
     reset
   } = useThemeState();
 
@@ -57,6 +59,7 @@ function App() {
     if (theme.isDarkMode !== undefined) setThemeMode(theme.isDarkMode ? 'dark' : 'light');
     if (theme.pageBackground) setPageBackground(theme.pageBackground);
     if (theme.filterPane) setFilterPane(theme.filterPane);
+    if (theme.visualContainer) setVisualContainer(theme.visualContainer);
 
     if (theme.colors && theme.colors.length > 0) {
       const newColors = theme.colors.map((hex, index) => ({
@@ -107,6 +110,7 @@ function App() {
           pageBackground={pageBackground}
           filterPane={filterPane}
           dataGradients={dataGradients}
+          visualContainer={visualContainer}
           onImport={handleImport}
           onReset={reset}
         />
@@ -140,6 +144,8 @@ function App() {
             setFilterPane={setFilterPane}
             dataGradients={dataGradients}
             setDataGradients={setDataGradients}
+            visualContainer={visualContainer}
+            setVisualContainer={setVisualContainer}
           />
         </div>
         <div className="lg:col-span-8 space-y-8">
@@ -152,6 +158,7 @@ function App() {
             pageBackground={pageBackground}
             filterPane={filterPane}
             dataGradients={dataGradients}
+            visualContainer={visualContainer}
           />
         </div>
       </main>

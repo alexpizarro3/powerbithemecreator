@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { type ColorItem } from '../components/PaletteGenerator';
 import { suggestThemeSettings } from '../utils/theme-suggestions';
 import { type TypographyState } from '../components/TypographySettings';
+import { type VisualContainerState } from '../components/VisualContainerSettings';
 
 export const useThemeState = () => {
     // Load initial state from localStorage or use default
@@ -97,6 +98,18 @@ export const useThemeState = () => {
         };
     });
 
+    const [visualContainer, setVisualContainer] = useState<VisualContainerState>(() => {
+        const saved = localStorage.getItem('pbi-theme-visual-container');
+        if (saved) {
+            return JSON.parse(saved);
+        }
+        return {
+            dropShadow: { show: false, color: '#000000', transparency: 70, blur: 4, angle: 90, distance: 3 },
+            header: { backgroundColor: 'transparent', fontColor: '', transparency: 0 },
+            tooltip: { backgroundColor: '', fontColor: '', transparency: 0 }
+        };
+    });
+
     // Persistence Effects
     useEffect(() => { localStorage.setItem('pbi-theme-colors', JSON.stringify(colors)); }, [colors]);
     useEffect(() => {
@@ -115,7 +128,9 @@ export const useThemeState = () => {
     useEffect(() => { localStorage.setItem('pbi-theme-typography', JSON.stringify(typography)); }, [typography]);
     useEffect(() => { localStorage.setItem('pbi-theme-page-bg', JSON.stringify(pageBackground)); }, [pageBackground]);
     useEffect(() => { localStorage.setItem('pbi-theme-filter-pane', JSON.stringify(filterPane)); }, [filterPane]);
+    useEffect(() => { localStorage.setItem('pbi-theme-filter-pane', JSON.stringify(filterPane)); }, [filterPane]);
     useEffect(() => { localStorage.setItem('pbi-theme-gradients', JSON.stringify(dataGradients)); }, [dataGradients]);
+    useEffect(() => { localStorage.setItem('pbi-theme-visual-container', JSON.stringify(visualContainer)); }, [visualContainer]);
 
     // Undo/Redo Logic
     const handleSetColors = (newColors: ColorItem[], addToHistory = true) => {
@@ -181,6 +196,8 @@ export const useThemeState = () => {
         setFilterPane,
         dataGradients,
         setDataGradients,
+        visualContainer,
+        setVisualContainer,
         reset: () => {
             localStorage.removeItem('pbi-theme-colors');
             localStorage.removeItem('pbi-theme-mode');
@@ -190,6 +207,7 @@ export const useThemeState = () => {
             localStorage.removeItem('pbi-theme-page-bg');
             localStorage.removeItem('pbi-theme-filter-pane');
             localStorage.removeItem('pbi-theme-gradients');
+            localStorage.removeItem('pbi-theme-visual-container');
 
             setColors([
                 { id: '1', hex: '#4DEEEA', locked: false },
@@ -214,6 +232,11 @@ export const useThemeState = () => {
                 bad: '#D64554',
                 neutral: '#F6C244',
                 good: '#1AAB40'
+            });
+            setVisualContainer({
+                dropShadow: { show: false, color: '#000000', transparency: 70, blur: 4, angle: 90, distance: 3 },
+                header: { backgroundColor: 'transparent', fontColor: '', transparency: 0 },
+                tooltip: { backgroundColor: '', fontColor: '', transparency: 0 }
             });
             setHistory([[
                 { id: '1', hex: '#4DEEEA', locked: false },

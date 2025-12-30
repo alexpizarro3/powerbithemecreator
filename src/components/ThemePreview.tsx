@@ -10,6 +10,7 @@ import { FilterPaneSidebar } from './preview/FilterPaneSidebar';
 import type { ColorItem } from './PaletteGenerator';
 import { VISION_MODES, COLOR_BLINDNESS_MATRICES, type VisionSimulationMode } from '../utils/accessibility';
 import type { TypographyState } from './TypographySettings';
+import type { VisualContainerState } from './VisualContainerSettings';
 
 interface ThemePreviewProps {
     colors: ColorItem[];
@@ -20,6 +21,7 @@ interface ThemePreviewProps {
     dataGradients: { bad: string; neutral: string; good: string };
     borderRadius: number;
     typography: TypographyState;
+    visualContainer: VisualContainerState;
 }
 
 const hexToRgba = (hex: string, transparency: number) => {
@@ -42,14 +44,11 @@ export const ThemePreview = ({
     typography,
     pageBackground,
     filterPane,
-    dataGradients
+    dataGradients,
+    visualContainer
 }: ThemePreviewProps) => {
     const [visionMode, setVisionMode] = useState<VisionSimulationMode>('normal');
     const palette = colors.map(c => c.hex);
-
-
-
-
 
     // Dynamic Background for Light Mode
     // We now use the passed pageBackground color (which is tinted) instead of a hardcoded gradient.
@@ -82,7 +81,6 @@ export const ThemePreview = ({
         subText: isLight ? 'text-slate-600' : 'text-slate-400',
 
         // Card Styles
-        // Card Styles
         card: isLight
             ? 'bg-white/40 border-white/40 shadow-sm backdrop-blur-md hover:bg-white/50 transition-colors' // More transparent (40%) and interactive
             : themeMode === 'soft'
@@ -95,9 +93,10 @@ export const ThemePreview = ({
         // Pills and Secondary
         pill: isLight ? 'bg-slate-100/50 backdrop-blur-sm' : 'bg-transparent',
         secondary: isLight ? 'bg-slate-100/50' : 'bg-white/5',
+
+        // Visual Container Upgrades
+        boxShadow: visualContainer.dropShadow.show ? `drop-shadow(${visualContainer.dropShadow.distance}px ${visualContainer.dropShadow.distance}px ${visualContainer.dropShadow.blur}px ${hexToRgba(visualContainer.dropShadow.color, visualContainer.dropShadow.transparency)})` : 'none',
     };
-
-
 
     // Helper to get font style
     const getTextStyle = (type: 'title' | 'callout' | 'label' | 'header') => {
@@ -153,8 +152,6 @@ export const ThemePreview = ({
                             ))}
                         </div>
                     </div>
-
-
 
                     {/* Theme Toggle (Segmented Control Style) */}
                     <div className={`flex rounded-lg p-1 border backdrop-blur-md transition-colors ${isLight
@@ -229,6 +226,7 @@ export const ThemePreview = ({
                                     palette={palette}
                                     borderRadius={borderRadius}
                                     getTextStyle={getTextStyle}
+                                    visualHeader={visualContainer.header}
                                 />
                             </div>
                             <SlicerMockup
@@ -247,12 +245,14 @@ export const ThemePreview = ({
                                 borderRadius={borderRadius}
                                 getTextStyle={getTextStyle}
                                 dataGradients={dataGradients}
+                                visualHeader={visualContainer.header}
                             />
                             <SalesChart
                                 theme={theme}
                                 palette={palette}
                                 borderRadius={borderRadius}
                                 getTextStyle={getTextStyle}
+                                visualHeader={visualContainer.header}
                             />
                             <DistributionChart
                                 theme={theme}
@@ -260,6 +260,7 @@ export const ThemePreview = ({
                                 borderRadius={borderRadius}
                                 getTextStyle={getTextStyle}
                                 isDarkMode={isDarkBool}
+                                visualHeader={visualContainer.header}
                             />
                         </div>
                     </div>

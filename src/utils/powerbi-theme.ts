@@ -19,6 +19,26 @@ export interface ThemeOptions {
         foreColor: string;
         transparency: number;
     };
+    visualContainer?: {
+        dropShadow?: {
+            show: boolean;
+            color: string;
+            transparency: number;
+            blur: number;
+            angle: number;
+            distance: number;
+        };
+        header?: {
+            backgroundColor: string;
+            fontColor: string;
+            transparency: number;
+        };
+        tooltip?: {
+            backgroundColor: string;
+            fontColor: string;
+            transparency: number;
+        };
+    };
 }
 
 export interface PowerBITheme {
@@ -48,7 +68,8 @@ export const generateThemeJSON = (options: ThemeOptions): PowerBITheme => {
         typography,
         isDarkMode = false,
         pageBackground,
-        filterPane
+        filterPane,
+        visualContainer
     } = options;
 
     const background = isDarkMode ? "#1A1A1A" : "#F3F4F6"; // Slate-100 for Light Mode Canvas
@@ -158,6 +179,17 @@ export const generateThemeJSON = (options: ThemeOptions): PowerBITheme => {
                         "fontFamily": globalFont,
                         "color": { "solid": { "color": foreground } }
                     }],
+                    "visualHeader": [{
+                        "background": { "solid": { "color": visualContainer?.header?.backgroundColor || "transparent" } },
+                        "titleColor": { "solid": { "color": visualContainer?.header?.fontColor || foreground } },
+                        "transparency": visualContainer?.header?.transparency ?? 0
+                    }],
+                    "visualTooltip": [{
+                        "background": { "solid": { "color": visualContainer?.tooltip?.backgroundColor || (isDarkMode ? "#252423" : "#FFFFFF") } },
+                        "valueFontColor": { "solid": { "color": visualContainer?.tooltip?.fontColor || foreground } },
+                        "titleFontColor": { "solid": { "color": visualContainer?.tooltip?.fontColor || foreground } },
+                        "transparency": visualContainer?.tooltip?.transparency ?? 0
+                    }],
                     "general": [{
                         "responsive": true
                     }],
@@ -168,13 +200,13 @@ export const generateThemeJSON = (options: ThemeOptions): PowerBITheme => {
                         "transparency": isDarkMode ? 80 : 0
                     }],
                     "dropShadow": [{
-                        "show": !isDarkMode,
-                        "color": { "solid": { "color": "#000000" } },
+                        "show": visualContainer?.dropShadow?.show ?? !isDarkMode,
+                        "color": { "solid": { "color": visualContainer?.dropShadow?.color || "#000000" } },
                         "position": "Outer",
-                        "transparency": 90,
-                        "blur": 10,
-                        "angle": 90,
-                        "distance": 2
+                        "transparency": visualContainer?.dropShadow?.transparency ?? 90,
+                        "blur": visualContainer?.dropShadow?.blur ?? 10,
+                        "angle": visualContainer?.dropShadow?.angle ?? 90,
+                        "distance": visualContainer?.dropShadow?.distance ?? 2
                     }],
                     "border": [{
                         "show": borderRadius > 0,
@@ -231,6 +263,7 @@ export const parseThemeJSON = (json: any): ThemeOptions => {
     let pageBackground = undefined;
     let filterPane = undefined;
     let typography: TypographyState | undefined = undefined;
+    let visualContainer: ThemeOptions['visualContainer'] = undefined;
 
     try {
         const globalStyles = json.visualStyles?.["*"]?.["*"]?.["*"]?.[0];
@@ -310,6 +343,7 @@ export const parseThemeJSON = (json: any): ThemeOptions => {
         isDarkMode,
         pageBackground,
         filterPane,
-        typography
+        typography,
+        visualContainer
     };
 };

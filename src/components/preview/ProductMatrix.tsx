@@ -8,16 +8,33 @@ interface ProductMatrixProps {
     borderRadius: number;
     getTextStyle: GetTextStyle;
     dataGradients: { bad: string; neutral: string; good: string };
+    visualHeader?: { backgroundColor: string; fontColor: string; transparency: number };
 }
 
-export const ProductMatrix = ({ theme, palette, borderRadius, getTextStyle, dataGradients }: ProductMatrixProps) => {
+export const ProductMatrix = ({ theme, palette, borderRadius, getTextStyle, dataGradients, visualHeader }: ProductMatrixProps) => {
     const headerTextColor = getOptimalTextColor(palette[0]);
     return (
         <div
-            className={`${theme.card} p-6 border transition-colors duration-300`}
+            className={`${theme.card} p-6 border transition-colors duration-300 relative overflow-hidden`}
             style={{ borderRadius: `${borderRadius}px` }}
         >
-            <div className={`flex items-center gap-2 mb-6 ${theme.subText} ${theme.pill} rounded-lg p-2 inline-flex`}>
+            {/* Visual Header Simulation */}
+            <div className="absolute top-0 left-0 right-0 h-8 flex items-center px-4 justify-end gap-2"
+                style={visualHeader && visualHeader.transparency < 100 ? {
+                    backgroundColor: visualHeader.backgroundColor,
+                    opacity: 1 - (visualHeader.transparency / 100)
+                } : { display: 'none' }}
+            >
+                {visualHeader && visualHeader.transparency < 100 && (
+                    <div className="flex gap-1 opacity-50">
+                        <div className="w-1 h-1 rounded-full" style={{ backgroundColor: visualHeader.fontColor }}></div>
+                        <div className="w-1 h-1 rounded-full" style={{ backgroundColor: visualHeader.fontColor }}></div>
+                        <div className="w-1 h-1 rounded-full" style={{ backgroundColor: visualHeader.fontColor }}></div>
+                    </div>
+                )}
+            </div>
+
+            <div className={`flex items-center gap-2 mb-6 ${theme.subText} ${theme.pill} rounded-lg p-2 inline-flex mt-4`}>
                 <LayoutGrid size={18} />
                 <span className="text-sm font-medium uppercase tracking-wider" style={getTextStyle('title')}>Product Matrix</span>
             </div>
