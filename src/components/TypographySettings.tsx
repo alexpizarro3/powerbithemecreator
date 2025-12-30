@@ -79,9 +79,9 @@ export const TypographySettings = ({ typography, onChange }: TypographySettingsP
                                 onChange={(e) => updateTextClass(key, 'fontFamily', e.target.value)}
                                 className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
                             >
-                                <option value="">Inherit Global ({typography.global})</option>
+                                <option value="" className="bg-slate-800 text-white">Inherit Global ({typography.global})</option>
                                 {COMMON_FONTS.map(font => (
-                                    <option key={font} value={font}>{font}</option>
+                                    <option key={font} value={font} className="bg-slate-800 text-white">{font}</option>
                                 ))}
                             </select>
                         </div>
@@ -159,7 +159,7 @@ export const TypographySettings = ({ typography, onChange }: TypographySettingsP
                         className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
                     >
                         {COMMON_FONTS.map(font => (
-                            <option key={font} value={font}>{font}</option>
+                            <option key={font} value={font} className="bg-slate-800 text-white">{font}</option>
                         ))}
                     </select>
                 </div>
