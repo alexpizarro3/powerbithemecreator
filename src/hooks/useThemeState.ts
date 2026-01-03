@@ -47,7 +47,7 @@ export const useThemeState = () => {
 
     const [borderRadius, setBorderRadius] = useState(() => {
         const saved = localStorage.getItem('pbi-theme-radius');
-        return saved ? Number(saved) : 0;
+        return saved ? Number(saved) : 8;
     });
 
     const [typography, setTypography] = useState<TypographyState>(() => {
@@ -218,7 +218,7 @@ export const useThemeState = () => {
             ]);
             setThemeName("My Custom Theme");
             setThemeMode('dark');
-            setBorderRadius(0);
+            setBorderRadius(8);
             setTypography({
                 global: "Segoe UI",
                 title: { fontFamily: "", fontSize: 14, color: "" },

@@ -48,6 +48,7 @@ export const ThemePreview = ({
     visualContainer
 }: ThemePreviewProps) => {
     const [visionMode, setVisionMode] = useState<VisionSimulationMode>('normal');
+    const [isVisionMenuOpen, setIsVisionMenuOpen] = useState(false);
     const palette = colors.map(c => c.hex);
 
     // Dynamic Background for Light Mode
@@ -82,17 +83,17 @@ export const ThemePreview = ({
 
         // Card Styles
         card: isLight
-            ? 'bg-white/40 border-white/40 shadow-sm backdrop-blur-md hover:bg-white/50 transition-colors' // More transparent (40%) and interactive
+            ? 'bg-white/90 border-slate-200/50 shadow-sm backdrop-blur-sm hover:shadow-md transition-all' // Soft Matte: High opacity, subtle border, soft shadow
             : themeMode === 'soft'
-                ? 'bg-black/20 border-white/5 shadow-none' // User JSON (20% transparency on black)
-                : 'bg-black/20 border-white/5', // Dark
+                ? 'bg-black/20 border-white/5 shadow-none'
+                : 'bg-black/20 border-white/5',
 
-        cardBorder: isLight ? 'border-slate-200/60' : 'border-white/5',
+        cardBorder: isLight ? 'border-slate-200/50' : 'border-white/5',
         hover: isLight ? 'hover:bg-white shadow-md' : 'hover:bg-white/5',
 
         // Pills and Secondary
-        pill: isLight ? 'bg-slate-100/50 backdrop-blur-sm' : 'bg-transparent',
-        secondary: isLight ? 'bg-slate-100/50' : 'bg-white/5',
+        pill: isLight ? 'bg-slate-100' : 'bg-transparent',
+        secondary: isLight ? 'bg-slate-50' : 'bg-white/5',
 
         // Visual Container Upgrades
         boxShadow: visualContainer.dropShadow.show ? `drop-shadow(${visualContainer.dropShadow.distance}px ${visualContainer.dropShadow.distance}px ${visualContainer.dropShadow.blur}px ${hexToRgba(visualContainer.dropShadow.color, visualContainer.dropShadow.transparency)})` : 'none',
@@ -131,26 +132,40 @@ export const ThemePreview = ({
                 <h2 className={`text-xl font-semibold ${theme.text}`}>Theme Preview</h2>
 
                 <div className="flex items-center gap-2">
-                    <div className="relative group">
-                        <button className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${isDarkBool ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-slate-200 hover:bg-slate-300 text-slate-700'}`}>
+                    <div className="relative">
+                        <button
+                            onClick={() => setIsVisionMenuOpen(!isVisionMenuOpen)}
+                            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${isDarkBool ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-slate-200 hover:bg-slate-300 text-slate-700'}`}
+                        >
                             <Eye size={16} />
                             <span className="hidden sm:inline">{VISION_MODES.find(m => m.value === visionMode)?.label}</span>
                         </button>
 
-                        <div className="absolute right-0 top-full mt-2 w-48 py-1 rounded-xl shadow-xl border border-white/10 bg-slate-800 backdrop-blur-xl z-50 hidden group-hover:block">
-                            {VISION_MODES.map((mode) => (
-                                <button
-                                    key={mode.value}
-                                    onClick={() => setVisionMode(mode.value)}
-                                    className={`w-full text-left px-4 py-2 text-sm transition-colors ${visionMode === mode.value
-                                        ? 'bg-blue-600 text-white'
-                                        : 'text-slate-300 hover:bg-white/10 hover:text-white'
-                                        }`}
-                                >
-                                    {mode.label}
-                                </button>
-                            ))}
-                        </div>
+                        {isVisionMenuOpen && (
+                            <>
+                                <div
+                                    className="fixed inset-0 z-40"
+                                    onClick={() => setIsVisionMenuOpen(false)}
+                                />
+                                <div className="absolute right-0 top-full mt-2 w-48 py-1 rounded-xl shadow-xl border border-white/10 bg-slate-800 backdrop-blur-xl z-50 animate-in fade-in zoom-in-95 duration-100">
+                                    {VISION_MODES.map((mode) => (
+                                        <button
+                                            key={mode.value}
+                                            onClick={() => {
+                                                setVisionMode(mode.value);
+                                                setIsVisionMenuOpen(false);
+                                            }}
+                                            className={`w-full text-left px-4 py-2 text-sm transition-colors ${visionMode === mode.value
+                                                ? 'bg-blue-600 text-white'
+                                                : 'text-slate-300 hover:bg-white/10 hover:text-white'
+                                                }`}
+                                        >
+                                            {mode.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </>
+                        )}
                     </div>
 
                     {/* Theme Toggle (Segmented Control Style) */}
