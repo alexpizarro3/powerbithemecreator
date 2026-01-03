@@ -59,7 +59,31 @@ function App() {
     if (theme.isDarkMode !== undefined) setThemeMode(theme.isDarkMode ? 'dark' : 'light');
     if (theme.pageBackground) setPageBackground(theme.pageBackground);
     if (theme.filterPane) setFilterPane(theme.filterPane);
-    if (theme.visualContainer) setVisualContainer(theme.visualContainer);
+    if (theme.visualContainer) {
+      setVisualContainer({
+        dropShadow: {
+          show: false,
+          color: '#000000',
+          transparency: 70,
+          blur: 4,
+          angle: 90,
+          distance: 3,
+          ...theme.visualContainer.dropShadow
+        },
+        header: {
+          backgroundColor: 'transparent',
+          fontColor: '',
+          transparency: 0,
+          ...theme.visualContainer.header
+        },
+        tooltip: {
+          backgroundColor: '',
+          fontColor: '',
+          transparency: 0,
+          ...theme.visualContainer.tooltip
+        }
+      });
+    }
 
     if (theme.colors && theme.colors.length > 0) {
       const newColors = theme.colors.map((hex, index) => ({
